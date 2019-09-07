@@ -227,21 +227,6 @@ module TSOS {
             _StdOut.resetXY();
         }
 
-        public shellDate(args: string[]) {
-            var date = new Date();
-            var d = date.getDate();
-            var mm = date.getMonth() + 1;
-            var y = date.getFullYear();
-
-            var time = new Date();
-            var h = time.getHours();
-            var m = time.getMinutes();
-            var s = time.getSeconds();
-
-            
-            alert(date);
-
-        }
 
         public shellMan(args: string[]) {
             if (args.length > 0) {

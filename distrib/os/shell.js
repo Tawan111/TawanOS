@@ -186,17 +186,6 @@ var TSOS;
             _StdOut.clearScreen();
             _StdOut.resetXY();
         }
-        shellDate(args) {
-            var date = new Date();
-            var d = date.getDate();
-            var mm = date.getMonth() + 1;
-            var y = date.getFullYear();
-            var time = new Date();
-            var h = time.getHours();
-            var m = time.getMinutes();
-            var s = time.getSeconds();
-            alert(date);
-        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
