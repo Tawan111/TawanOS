@@ -9,7 +9,7 @@
 
 // TODO: Write a base class / prototype for system services and let Shell inherit from it.
 
-module TSOS {
+module TawanOS {
     export class Shell {
         // Properties
         public promptStr = ">";
