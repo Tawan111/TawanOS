@@ -193,8 +193,26 @@ var TSOS;
                     case "help":
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
-                    case "test":
-                        _StdOut.putText("Testing manual page");
+                    case "ver":
+                        _StdOut.putText("Displays the current version data.");
+                        break;
+                    case "shutdown":
+                        _StdOut.putText("Shuts down the virtual OS but leaves the underlying host / hardware simulation running.");
+                        break;
+                    case "cls":
+                        _StdOut.putText("Clears the screen and resets the cursor position.");
+                        break;
+                    case "man":
+                        _StdOut.putText("Displays the manual page for <topic>.");
+                        break;
+                    case "trace":
+                        _StdOut.putText("Turns the OS trace on or off.");
+                        break;
+                    case "rot13":
+                        _StdOut.putText("Does rot13 obfuscation on <string>.");
+                        break;
+                    case "prompt":
+                        _StdOut.putText("Sets the prompt");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
