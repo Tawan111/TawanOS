@@ -46,7 +46,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
             // date
-            sc = new TSOS.ShellCommand(this.shellDate, "date", "Displays the current date and time");
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -190,8 +190,7 @@ var TSOS;
             _StdOut.resetXY();
         }
         shellDate(args) {
-            let date = new Date();
-            console.log(Date);
+            _StdOut.putText("Date/Time - " + date); // displays the date/time 
         }
         shellMan(args) {
             if (args.length > 0) {

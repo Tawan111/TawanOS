@@ -76,7 +76,7 @@ module TSOS {
             // date
             sc = new ShellCommand(this.shellDate,
                                   "date",
-                                  "Displays the current date and time");
+                                  "- Displays the current date and time");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -234,8 +234,7 @@ module TSOS {
         }
 
         public shellDate(args: string[]) {
-            let date: Date = new Date();
-            console.log(Date);
+            _StdOut.putText("Date/Time - " + date); // displays the date/time 
         }
 
         public shellMan(args: string[]) {
