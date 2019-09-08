@@ -227,6 +227,10 @@ module TSOS {
             _StdOut.resetXY();
         }
 
+        public shellDate(args: string[]) {
+            let date: Date = new Date();
+            console.log(Date);
+        }
 
         public shellMan(args: string[]) {
             if (args.length > 0) {

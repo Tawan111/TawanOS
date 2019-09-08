@@ -186,6 +186,10 @@ var TSOS;
             _StdOut.clearScreen();
             _StdOut.resetXY();
         }
+        shellDate(args) {
+            let date = new Date();
+            console.log(Date);
+        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
