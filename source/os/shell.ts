@@ -234,6 +234,7 @@ module TSOS {
         }
 
         public shellDate(args: string[]) {
+            const date = new Date().toLocaleString(); // current date/time
             _StdOut.putText(date); // displays the date/time 
         }
 
