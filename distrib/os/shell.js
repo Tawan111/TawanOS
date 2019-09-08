@@ -190,7 +190,7 @@ var TSOS;
             _StdOut.resetXY();
         }
         shellDate(args) {
-            _StdOut.putText("Date/Time - " + date); // displays the date/time 
+            _StdOut.putText(date); // displays the date/time 
         }
         shellMan(args) {
             if (args.length > 0) {

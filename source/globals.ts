@@ -20,7 +20,7 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const date = new Date(); // current date/time
+const date = new Date().toLocaleString(); // current date/time
 
 
 

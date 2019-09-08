@@ -234,7 +234,7 @@ module TSOS {
         }
 
         public shellDate(args: string[]) {
-            _StdOut.putText("Date/Time - " + date); // displays the date/time 
+            _StdOut.putText(date); // displays the date/time 
         }
 
         public shellMan(args: string[]) {
