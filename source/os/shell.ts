@@ -76,7 +76,13 @@ module TSOS {
             // date
             sc = new ShellCommand(this.shellDate,
                                   "date",
-                                  "- Displays the current date and time");
+                                  "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whereami
+            sc = new ShellCommand(this.shellWhereami,
+                                 "whereami",
+                                 "- Displays location.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -238,6 +244,11 @@ module TSOS {
             _StdOut.putText(date); // displays the date/time 
         }
 
+        public shellWhereami(args: string[]) {
+            var location = "";
+            _StdOut.putText(location);
+        }
+
         public shellMan(args: string[]) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -268,6 +279,9 @@ module TSOS {
                          break;
                     case "date":
                          _StdOut.putText("Displays the current date and time");
+                         break;
+                    case "whereami":
+                         _StdOut.putText("Displays location");
                          break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

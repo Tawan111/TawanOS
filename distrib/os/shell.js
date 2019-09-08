@@ -46,7 +46,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
             // date
-            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time");
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+            // whereami
+            sc = new TSOS.ShellCommand(this.shellWhereami, "whereami", "- Displays location.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -193,6 +196,10 @@ var TSOS;
             const date = new Date().toLocaleString(); // current date/time
             _StdOut.putText(date); // displays the date/time 
         }
+        shellWhereami(args) {
+            var location = "";
+            _StdOut.putText(location);
+        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -223,6 +230,9 @@ var TSOS;
                         break;
                     case "date":
                         _StdOut.putText("Displays the current date and time");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Displays location");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
