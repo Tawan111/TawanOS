@@ -54,6 +54,9 @@ var TSOS;
             // theme
             sc = new TSOS.ShellCommand(this.shellTheme, "theme", "- Plays the Matrix theme song.");
             this.commandList[this.commandList.length] = sc;
+            // stoptheme
+            sc = new TSOS.ShellCommand(this.shellStoptheme, "stoptheme", "- Stop the Matrix theme song.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -205,10 +208,11 @@ var TSOS;
             _StdOut.putText("You took the " + random);
         }
         shellTheme(args) {
-            var theme = new Audio();
-            theme.src = "https://github.com/Tawan111/TawanOS/sound/The Matrix.mp3";
-            theme.load();
-            theme.play();
+            theme.play(); //plays The Matrix theme song
+        }
+        shellStoptheme(args) {
+            theme.pause(); //stop the song
+            theme.currentTime = 0; //reset the song to the beginning
         }
         shellMan(args) {
             if (args.length > 0) {
@@ -243,6 +247,12 @@ var TSOS;
                         break;
                     case "whereami":
                         _StdOut.putText("Displays location");
+                        break;
+                    case "theme":
+                        _StdOut.putText("Plays The Matrix theme song");
+                        break;
+                    case "stoptheme":
+                        _StdOut.putText("Stops The Matrix Theme song");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

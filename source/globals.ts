@@ -22,12 +22,13 @@ const KEYBOARD_IRQ: number = 1;
 
 
 
-
-
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
+
+var theme = new Audio('https://ia600901.us.archive.org/27/items/tvtunes_7626/The%20Matrix.mp3'); //link to the Matrix theme mp3 website
+
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 
 var _OSclock: number = 0;  // Page 23.
@@ -69,5 +70,5 @@ var Glados: any = null;  // This is the function Glados() in glados-ip*.js http:
 var _GLaDOS: any = null; // If the above is linked in, this is the instantiated instance of Glados.
 
 var onDocumentLoad = function() {
-	TSOS.Control.hostInit();
+    TSOS.Control.hostInit();
 };
