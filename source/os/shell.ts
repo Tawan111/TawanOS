@@ -240,13 +240,14 @@ module TSOS {
         }
 
         public shellDate(args: string[]) {
-            const date = new Date().toLocaleString(); // current date/time
+            const date = new Date().toLocaleString(); // current date/time. toLocaleString() is the format
             _StdOut.putText(date); // displays the date/time 
         }
 
         public shellWhereami(args: string[]) {
-            var location = "";
-            _StdOut.putText(location);
+            var pillsArray = ['Red pill. You are now experiencing the brutal truth of reality', 'Blue pill. Enjoy the simple life of blissful ignorance'];
+            var random = pillsArray[Math.floor(Math.random() * pillsArray.length)];  //randomly select from pillsArray
+            _StdOut.putText("You took the " + random);
         }
 
         public shellMan(args: string[]) {
