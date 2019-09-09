@@ -51,6 +51,9 @@ var TSOS;
             // whereami
             sc = new TSOS.ShellCommand(this.shellWhereami, "whereami", "- Displays location.");
             this.commandList[this.commandList.length] = sc;
+            // theme
+            sc = new TSOS.ShellCommand(this.shellTheme, "theme", "- Plays the Matrix theme song.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -200,6 +203,12 @@ var TSOS;
             var pillsArray = ['Red pill. You are now experiencing the brutal truth of reality', 'Blue pill. Enjoy the simple life of blissful ignorance'];
             var random = pillsArray[Math.floor(Math.random() * pillsArray.length)]; //randomly select from pillsArray
             _StdOut.putText("You took the " + random);
+        }
+        shellTheme(args) {
+            var theme = new Audio();
+            theme.src = "https://github.com/Tawan111/TawanOS/sound/The Matrix.mp3";
+            theme.load();
+            theme.play();
         }
         shellMan(args) {
             if (args.length > 0) {
