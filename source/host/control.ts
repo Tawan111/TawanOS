@@ -93,6 +93,13 @@ module TSOS {
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
+
+            function dateTime() { 
+                //displays date and time when the start button is clicked
+                var dateTime = new Date().toLocaleString();
+                document.getElementById("datetime").innerText = dateTime; 
+            }
+            setInterval(dateTime, 1000); //update the date and time every second
         }
 
         public static hostBtnHaltOS_click(btn): void {

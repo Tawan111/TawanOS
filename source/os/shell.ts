@@ -97,6 +97,12 @@ module TSOS {
                                 "- Stop the Matrix theme song.");
             this.commandList[this.commandList.length] = sc;
 
+            // status
+            sc = new ShellCommand(this.shellStatus,
+                                "status",
+                                "<string> - Sets a status message");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -252,7 +258,7 @@ module TSOS {
         }
 
         public shellDate(args: string[]) {
-            const date = new Date().toLocaleString(); // current date/time. toLocaleString() is the format
+            var date = new Date().toLocaleString(); // current date/time
             _StdOut.putText(date); // displays the date/time 
         }
 
@@ -271,6 +277,14 @@ module TSOS {
             theme.currentTime = 0; //reset the song to the beginning
         }
 
+        public shellStatus(args: string[]) {
+            if (args.length > 0) {
+                var status = args.toLocaleString().split(',').join(' '); //split() and join() fixes the issue where a space is replaced by a comma
+                document.getElementById("status").innerText = "Status: " + status;
+            } else {
+                _StdOut.putText("Usage: status <string> Please supply a string.");
+            }
+        }
         public shellMan(args: string[]) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -297,19 +311,22 @@ module TSOS {
                         _StdOut.putText("Does rot13 obfuscation on <string>.");
                         break;
                     case "prompt":
-                         _StdOut.putText("Sets the prompt");
+                         _StdOut.putText("Sets the prompt.");
                          break;
                     case "date":
-                         _StdOut.putText("Displays the current date and time");
+                         _StdOut.putText("Displays the current date and time.");
                          break;
                     case "whereami":
-                         _StdOut.putText("Displays location");
+                         _StdOut.putText("Displays location.");
                          break;
                      case "theme":
-                        _StdOut.putText("Plays The Matrix theme song");
+                        _StdOut.putText("Plays The Matrix theme song.");
                         break;
                     case "stoptheme":
-                        _StdOut.putText("Stops The Matrix Theme song");
+                        _StdOut.putText("Stops The Matrix Theme song.");
+                        break;
+                    case "status":
+                        _StdOut.putText("<string> - Sets a status message.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
