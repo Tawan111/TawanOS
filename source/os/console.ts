@@ -81,6 +81,27 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
+
+            if (this.currentYPosition > _Canvas.height) {
+                //x coordinate of extraction
+                var sx = 0; 
+                //y coordinate of extraction. + 7 seems to be the right amount of spacing between lines
+                var sy = this.currentFontSize + 7; 
+                //x coordinate of placement
+                var dx = 0;
+                //y coordinate of placement
+                var dy = 0;
+                var yPosition = _Canvas.height - _DefaultFontSize + 
+                                                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                                                 _FontHeightMargin;
+                //getImageData() save the current canvas
+                var canvasImg = _DrawingContext.getImageData(sx, sy, _Canvas.width, _Canvas.height);
+                //putImageData() place the saved canvas 
+                _DrawingContext.putImageData(canvasImg, dx, dy);
+                this.currentYPosition = yPosition;
+
+            }
+            
         }
     }
  }
