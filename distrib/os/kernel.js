@@ -151,6 +151,15 @@ var TSOS;
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
             this.krnShutdown();
+            //Stop the interval of clock pulse.
+            clearInterval(_hardwareClockID);
+            //using the canvas' Id in order to fill the whole canvas with a color
+            var canvasDisplay = document.getElementById("display");
+            var bsodImage = canvasDisplay.getContext("2d");
+            //fillStyle for chosen color
+            bsodImage.fillStyle = "blue";
+            //fillRect using the canvas' width and height
+            bsodImage.fillRect(0, 0, 500, 500);
         }
     }
     TSOS.Kernel = Kernel;

@@ -101,7 +101,8 @@ module TSOS {
                 this.currentYPosition = yPosition;
 
             }
-            
+    
         }
+       
     }
  }

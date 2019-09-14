@@ -58,7 +58,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStoptheme, "stoptheme", "- Stop the Matrix theme song.");
             this.commandList[this.commandList.length] = sc;
             // status
-            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets a status message");
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets a status message.");
+            this.commandList[this.commandList.length] = sc;
+            // bsod
+            sc = new TSOS.ShellCommand(this.shellBsod, "bsod", "- Will crash the OS.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -226,6 +229,9 @@ var TSOS;
                 _StdOut.putText("Usage: status <string> Please supply a string.");
             }
         }
+        shellBsod(args) {
+            _Kernel.krnTrapError('OS crashed');
+        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -268,6 +274,9 @@ var TSOS;
                         break;
                     case "status":
                         _StdOut.putText("<string> - Sets a status message.");
+                        break;
+                    case "bsod":
+                        _StdOut.putText("Will crash the OS.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
