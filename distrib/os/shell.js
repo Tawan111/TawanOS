@@ -63,6 +63,9 @@ var TSOS;
             // bsod
             sc = new TSOS.ShellCommand(this.shellBsod, "bsod", "- Will crash the OS.");
             this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validate the user code.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -232,6 +235,20 @@ var TSOS;
         shellBsod(args) {
             _Kernel.krnTrapError('OS crashed');
         }
+        shellLoad(args) {
+            var prog = document.getElementById('taProgramInput');
+            //has to be value
+            var userInput = prog.value;
+            //RegExp for matching hex digits
+            var regExpTest = /[a-fA-F0-9]{2}/;
+            //test to see if the user input match RegExp
+            if (userInput.match(regExpTest)) {
+                _StdOut.putText("Success! Only hex digits detected.");
+            }
+            else {
+                _StdOut.putText("Invalid! non-hex digits detected.");
+            }
+        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -277,6 +294,9 @@ var TSOS;
                         break;
                     case "bsod":
                         _StdOut.putText("Will crash the OS.");
+                        break;
+                    case "load":
+                        _StdOut.putText("Validate the user code.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

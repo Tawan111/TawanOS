@@ -40,7 +40,6 @@ var TSOS;
             }
             else if (((keyCode >= 48) && (keyCode <= 57)) || // digits
                 (keyCode == 32) || // space
-                (keyCode == 8) || // delete
                 (keyCode == 13)) { // enter
                 chr = String.fromCharCode(keyCode);
                 // Punctuations and symbols
@@ -150,6 +149,28 @@ var TSOS;
                             chr = "'";
                         break;
                 }
+            }
+            else if (keyCode == 8) { //delete 
+                var deletedChr = -1;
+                _Console.delete(_Console.buffer.charAt(_Console.buffer.length - 1));
+                //deleting the last input
+                _Console.buffer = _Console.buffer.slice(0, deletedChr);
+            }
+            else if (keyCode == 9) { //tab for code completion. If no user input, tab will complete the help command to print out all of the commands
+                var buffer = _Console.tab(_Console.buffer);
+                if (buffer.length > 0) {
+                    //delete the user input
+                    _Console.delete(_Console.buffer);
+                    //replacing buffer with completed command
+                    _Console.buffer = buffer;
+                    _Console.putText(_Console.buffer);
+                }
+            }
+            else if (keyCode == 38) { //up arrow
+                _Console.upArrow();
+            }
+            else if (keyCode == 40) { //down arrow
+                _Console.downArrow();
             }
             _KernelInputQueue.enqueue(chr);
         }

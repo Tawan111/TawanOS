@@ -26,6 +26,7 @@ const KEYBOARD_IRQ: number = 1;
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
+var commands = ["help", "ver", "shutdown", "cls", "man", "trace", "rot13", "prompt", "date", "whereami", "theme", "stoptheme", "status", "bsod", "load"]; //all shell commands 
 
 var theme = new Audio('https://ia600901.us.archive.org/27/items/tvtunes_7626/The%20Matrix.mp3'); //link to the Matrix theme mp3 website
 
