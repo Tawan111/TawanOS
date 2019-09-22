@@ -66,6 +66,11 @@ module TSOS {
                 decided to write one function and use the term "text" to connote string or char.
             */
             if (text !== "") {
+                //if the current position surpasses the canvas, advanceLine() is called
+                if (this.currentXPosition > _Canvas.width) {
+                    this.advanceLine();
+                    
+                }
                 // Draw the text at the current X and Y coordinates.
                 _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
                 // Move the current X position.
@@ -167,5 +172,6 @@ module TSOS {
                 _KernelInputQueue.enqueue(text.charAt(i));
             }
         }
+
     }
  }
