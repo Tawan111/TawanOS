@@ -34,10 +34,20 @@ var TSOS;
         cycle() {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
+            //run the process
+            if (this.PC < 1) {
+                var pcb = _NewProcess.dequeue();
+                TSOS.Control.updatePcbTable(this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag);
+            }
             //retrieve code from memory
             var memoryOutput = this.retrieve(this.PC);
             this.IR = memoryOutput;
             this.executeProg(memoryOutput);
+            //transfer output to the cpu display
+            this.cpuDisplay();
+            if (this.isExecuting) {
+                TSOS.Control.updatePcbTable(this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag);
+            }
         }
         retrieve(ProgC) {
             return _MemoryManager.getMem(ProgC);
@@ -91,6 +101,7 @@ var TSOS;
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(INVALID_IRQ, opCode));
                         _Kernel.completeProc();
                         this.init();
+                        this.cpuDisplay();
                         break;
                 }
             }
@@ -163,6 +174,7 @@ var TSOS;
         break() {
             _Kernel.completeProc();
             this.init();
+            this.cpuDisplay();
         }
         //compare memory to X
         compareMemToXreg() {
@@ -225,6 +237,15 @@ var TSOS;
             //output
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(OUTPUT_IRQ, str));
             this.PC++;
+        }
+        cpuDisplay() {
+            var cpuDisplay = document.getElementById("cpu");
+            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = this.PC.toString();
+            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = this.IR.toString();
+            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = this.Acc.toString();
+            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = this.Xreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = this.Yreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = this.Zflag.toString();
         }
     }
     TSOS.Cpu = Cpu;

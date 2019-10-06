@@ -8,13 +8,13 @@ var TSOS;
 (function (TSOS) {
     class Pcb {
         constructor(pcb, pid) {
+            this.state = "New";
             this.pc = 0;
             this.ir = "00";
             this.acc = 0;
             this.x = 0;
             this.y = 0;
             this.z = 0;
-            this.state = "New";
             this.location = "Memory";
             this.pcb = pcb;
             this.pid = pid;

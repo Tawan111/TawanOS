@@ -14,7 +14,7 @@
 module TSOS {
 
     export class Cpu {
-    
+
         constructor(public PC: number = 0,
                     public IR: string = "00", 
                     public Acc: number = 0,
@@ -22,9 +22,9 @@ module TSOS {
                     public Yreg: number = 0,
                     public Zflag: number = 0,
                     public isExecuting: boolean = false) {
-    
+
         }
-    
+
         public init(): void {
             this.PC = 0;
             this.IR = "00"; 
@@ -34,21 +34,41 @@ module TSOS {
             this.Zflag = 0;
             this.isExecuting = false;
         }
-    
+
         public cycle(): void {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
+            //run the process
+            if(this.PC < 1){
+                var pcb = _NewProcess.dequeue();
+                Control.updatePcbTable(this.PC, 
+                                       this.IR, 
+                                       this.Acc, 
+                                       this.Xreg, 
+                                       this.Yreg, 
+                                       this.Zflag);
+            }
             //retrieve code from memory
             var memoryOutput = this.retrieve(this.PC);
             this.IR = memoryOutput;
             this.executeProg(memoryOutput);   
+            //transfer output to the cpu display
+            this.cpuDisplay();
+            if(this.isExecuting){
+                Control.updatePcbTable(this.PC, 
+                                       this.IR, 
+                                       this.Acc, 
+                                       this.Xreg, 
+                                       this.Yreg, 
+                                       this.Zflag);
+            }
         }
-    
+
         public retrieve(ProgC) {
             return _MemoryManager.getMem(ProgC);
-    
+
         }
-    
+
         public executeProg(opCode) {
             if (opCode.length > 0) {
                 switch (opCode) {
@@ -98,6 +118,7 @@ module TSOS {
                         _KernelInterruptQueue.enqueue(new Interrupt(INVALID_IRQ, opCode));
                         _Kernel.completeProc();
                         this.init();
+                        this.cpuDisplay();
                         break;
                 }
             }
@@ -115,7 +136,7 @@ module TSOS {
             index = parseInt(memAddress, 16);  
             this.Acc = parseInt(this.retrieve(index), 16);;
             this.PC = this.PC + 3;
-    
+
         }
         //store accu in memory
         public storeAccMem() {
@@ -123,7 +144,7 @@ module TSOS {
             memAddress = this.retrieve(this.PC + 2) + this.retrieve(this.PC + 1);                        
             _MemoryManager.updateMem(memAddress, this.Acc);
             this.PC = this.PC + 3;
-    
+
         }
         //add with carry
         public addWithCarry() {
@@ -133,13 +154,13 @@ module TSOS {
             index = parseInt(memAddress, 16); 
             this.Acc = parseInt(this.retrieve(index), 16) + this.Acc;
             this.PC = this.PC + 3;
-    
+
         }
         //load x with constant
         public loadXregWithConst() {
             this.Xreg = parseInt(this.retrieve(this.PC + 1), 16);;
             this.PC = this.PC + 2;
-    
+
         }
         //load x from memory
         public loadXregFromMem() {
@@ -149,13 +170,13 @@ module TSOS {
             index = parseInt(memAddress, 16);  
             this.Xreg = parseInt(this.retrieve(index), 16);
             this.PC = this.PC + 3;
-    
+
         }
         //load y with constant
         public loadYregWithConst() {
             this.Yreg = parseInt(this.retrieve(this.PC + 1), 16);
             this.PC = this.PC + 2;
-    
+
         }
         //load y from memory
         public loadYregFromMem() {
@@ -165,18 +186,19 @@ module TSOS {
             index = parseInt(memAddress, 16);  
             this.Yreg = parseInt(this.retrieve(index), 16);
             this.PC = this.PC + 3;
-    
+
         }
         //no operation
         public noOp() {
             this.PC++;
-    
+
         }
         //break
         public break() {
             _Kernel.completeProc();
             this.init();
-    
+            this.cpuDisplay();
+
         }
         //compare memory to X
         public compareMemToXreg() {
@@ -190,7 +212,7 @@ module TSOS {
                 this.Zflag = 0;
             }
             this.PC = this.PC + 3;
-    
+
         }
         //branch n bytes
         public branchNBytes() {
@@ -201,11 +223,11 @@ module TSOS {
                 } else {
                     br = br % 256;
                     this.PC = br + 2;
-                    }
-                } else {
-                    this.PC = this.PC + 2;  
+                }
+            } else {
+                this.PC = this.PC + 2;  
             }   
-    
+
         }
         //increment byte
         public increByte() {
@@ -218,7 +240,7 @@ module TSOS {
             d++;
             _MemoryManager.updateMem(memAddress, d);
             this.PC = this.PC + 3;
-    
+
         }
         //system call
         public systemCall() {
@@ -238,7 +260,18 @@ module TSOS {
             //output
             _KernelInterruptQueue.enqueue(new Interrupt(OUTPUT_IRQ, str));                        
             this.PC++;
-    
+
         }
+
+        public cpuDisplay(): void {	
+            var cpuDisplay = <HTMLTableElement> document.getElementById("cpu");	
+            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = this.PC.toString();	
+            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = this.IR.toString();            	
+            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = this.Acc.toString();            	
+            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = this.Xreg.toString();            	
+            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = this.Yreg.toString();            	
+            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = this.Zflag.toString();                        	
+        } 
     }
 }
+   

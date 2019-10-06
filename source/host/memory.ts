@@ -35,21 +35,18 @@ module TSOS {
                 //memory table output in uppercase
                 var location = "000"
                 var hexDigit = location + container.toString(16).toUpperCase();
-                var output = document.createTextNode(hexDigit.slice(-4));
                 //append the output to tablecell and tablecell to tablerow
                 tableCell.id = "data" + hexDigit.slice(-4);
-                tableCell.appendChild(output);
+                tableCell.appendChild(document.createTextNode(hexDigit.slice(-4)));
                 tableRow.appendChild(tableCell);        
     
                 for (var c = 0; c < 8; c++) {
                     tableCell = document.createElement("td");
                     var data = c + container;
                     var val = location + data.toString(16).toUpperCase();
-                    var memoryValue = this.memorArr[data];
-                    output = document.createTextNode(memoryValue);
                     tableCell.id = val.slice(-4);
-    
-                    tableCell.appendChild(output);
+
+                    tableCell.appendChild(document.createTextNode(this.memorArr[data]));
                     tableRow.appendChild(tableCell);
     
                 }

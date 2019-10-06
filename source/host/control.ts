@@ -124,5 +124,58 @@ module TSOS {
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         }
+
+        //table to display pcb
+        public static makePcbTable(pcb): void {
+            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");         
+            var pcbRow = <HTMLTableRowElement> document.createElement("tr");
+            var pcbCell = <HTMLTableCellElement> document.createElement("td");
+            pcbRow.id = pcb.pid;
+            pcbCell.id = pcb.id;
+            pcbCell.appendChild(document.createTextNode(pcb.pid)); //pid
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");    
+            pcbCell.appendChild(document.createTextNode(pcb.state)); //state
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");  
+            pcbCell.appendChild(document.createTextNode(pcb.pc)); //pc
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td"); 
+            pcbCell.appendChild(document.createTextNode("0")); //ir
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");     
+            pcbCell.appendChild(document.createTextNode(pcb.acc)); //acc
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");            
+            pcbCell.appendChild(document.createTextNode(pcb.x)); //xreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");            
+            pcbCell.appendChild(document.createTextNode(pcb.y)); //yreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");    
+            pcbCell.appendChild(document.createTextNode(pcb.z)); //zreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");                
+            pcbCell.appendChild(document.createTextNode(pcb.location)); //location
+            pcbRow.appendChild(pcbCell);
+            pcbTable.appendChild(pcbRow);
+        } 
+        //updates the pcb table
+        public static updatePcbTable(pc, ir, acc, x, y, z): void {
+            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");                
+            var pcbRow = pcbTable.rows.item(0);
+            pcbRow.cells.item(1).innerHTML = "Running";
+            pcbRow.cells.item(2).innerHTML = pc;
+            pcbRow.cells.item(3).innerHTML = ir;
+            pcbRow.cells.item(4).innerHTML = acc;
+            pcbRow.cells.item(5).innerHTML = x;
+            pcbRow.cells.item(6).innerHTML = y;
+            pcbRow.cells.item(7).innerHTML = z;
+        }
+        //empty the table after process is completed
+        public static clearPcbTable(): void {
+            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");     
+            pcbTable.deleteRow(0);    
+        }
     }
 }

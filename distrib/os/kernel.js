@@ -175,14 +175,16 @@ var TSOS;
         //new process when load in memory
         newProg(pcb) {
             _PID++;
-            var newId = _PID;
-            var process = new TSOS.Pcb(pcb, newId);
-            _NewProcess.enqueue(process);
-            return newId;
+            var proc = new TSOS.Pcb(pcb, _PID);
+            _NewProcess.enqueue(proc);
+            //print pcb table
+            TSOS.Control.makePcbTable(proc);
+            return _PID;
         }
         //comeplete the process and free partition
         completeProc() {
             _MemoryManager.freeMem(0);
+            TSOS.Control.clearPcbTable();
         }
         //invalid op code detected
         UpiInvalid(opCode) {

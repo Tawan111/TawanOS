@@ -194,15 +194,17 @@
             }
             //new process when load in memory
             public newProg(pcb) {
-                _PID++;          
-                var newId = _PID;
-                var process = new Pcb(pcb, newId);
-                 _NewProcess.enqueue(process);
-                return newId;
+                _PID++;  
+                var proc = new Pcb(pcb, _PID);
+                 _NewProcess.enqueue(proc);
+                //print pcb table
+                Control.makePcbTable(proc);
+                return _PID;
             }
             //comeplete the process and free partition
             public completeProc(){
                 _MemoryManager.freeMem(0);
+                Control.clearPcbTable();
             }
             //invalid op code detected
             public UpiInvalid(opCode){

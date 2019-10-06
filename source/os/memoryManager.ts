@@ -24,17 +24,16 @@
                 for (var i = memory; i <uPI.length; i++) {
                     _Memory.memorArr[i] = uPI[i];
                 }  
+                _Memory.updateMemDisplay(memory);
                 return memory;
             }
             //get memory
             public getMem(arr){
-                var data = _Memory.memorArr[arr];
-                return data;
+                return _Memory.memorArr[arr];
             }
             //update memory
             public updateMem(memAddress, d): void {
-                var arr = parseInt(memAddress, 16);  
-                _Memory.memorArr[arr] = d.toString(16);
+                _Memory.memorArr[parseInt(memAddress, 16)] = d.toString(16);
               
             }
             //clear the memory display
@@ -42,9 +41,10 @@
                 for (var i = memory; i <= memory + 255; i++){
                     _Memory.memorArr[i] = "00";
                 } 
-                if(memory==0) {
+                if(memory == 0) {
                     _Memory.partition0 = false;
                 } 
+                _Memory.updateMemDisplay(memory);
             }
         }
     }
