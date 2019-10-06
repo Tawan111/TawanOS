@@ -115,6 +115,12 @@ module TSOS {
                 "- Validate the user code.");
             this.commandList[this.commandList.length] = sc;
 
+             // run
+             sc = new ShellCommand(this.shellRun,
+                "run",
+                "<pid - Runs the process according to the id.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -336,6 +342,21 @@ module TSOS {
             
         }
 
+        public shellRun(pid) {
+            if (pid != ""){
+                //user integer input must matach an existing pid
+                if(pid != _PID) {
+                    _StdOut.putText("pid: " + pid + " does not exist");                    
+                } else {
+                    _RunningProcess.enqueue(_NewProcess.dequeue());
+                    _CPU.isExecuting = true;
+                    }
+                } else {
+                    //if no pid detected
+                    _StdOut.putText("Must input a pid");
+             }  
+          }
+
         public shellMan(args: string[]) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -384,6 +405,9 @@ module TSOS {
                         break;
                     case "load":
                         _StdOut.putText("Validate the user code.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Runs the process according to the id");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
