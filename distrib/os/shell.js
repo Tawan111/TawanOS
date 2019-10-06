@@ -262,7 +262,7 @@ var TSOS;
                     _StdOut.putText("Memory is not big enough");
                 }
                 else {
-                    // base register value from when memory was loaded
+                    //val from memory
                     var memory = _MemoryManager.checkPartition(OpCodes);
                     if (memory < 256) {
                         var pid = _Kernel.newProg(memory);

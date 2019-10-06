@@ -126,10 +126,10 @@
                         _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                         _StdIn.handleInput();
                         break;
-                        case INVALID_IRQ:
+                    case INVALID_IRQ:
                         this.UpiInvalid(params);
                         break;
-                        case OUTPUT_IRQ:
+                    case OUTPUT_IRQ:
                         this.output(params);
                         break;
                     default:

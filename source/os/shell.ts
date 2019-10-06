@@ -111,14 +111,14 @@ module TSOS {
 
              // load
              sc = new ShellCommand(this.shellLoad,
-                "load",
-                "- Validate the user code.");
+                                "load",
+                                "- Validate the user code.");
             this.commandList[this.commandList.length] = sc;
 
              // run
              sc = new ShellCommand(this.shellRun,
-                "run",
-                "<pid - Runs the process according to the id.");
+                                "run",
+                                "<pid - Runs the process according to the id.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -329,7 +329,7 @@ module TSOS {
                 if (OpCodes.length > 256){
                     _StdOut.putText("Memory is not big enough");
                 } else {
-                    // base register value from when memory was loaded
+                    //val from memory
                     var memory = _MemoryManager.checkPartition(OpCodes);
                     if (memory < 256){
                         var pid = _Kernel.newProg(memory);
