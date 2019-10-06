@@ -241,12 +241,34 @@ var TSOS;
             var userInput = prog.value;
             //RegExp for matching hex digits
             var regExpTest = /[a-fA-F0-9]{2}/;
+            var validator = false;
             //test to see if the user input match RegExp
-            if (userInput.match(regExpTest)) {
-                _StdOut.putText("Success! Only hex digits detected.");
+            if (userInput == "") {
+                _StdOut.putText("User Program Input field is empty.");
+            }
+            else if (userInput.match(regExpTest)) {
+                validator = true;
             }
             else {
                 _StdOut.putText("Invalid! non-hex digits detected.");
+            }
+            //if hex digits are detected
+            if (validator == true) {
+                var OpCodes = userInput.split(" ");
+                if (OpCodes.length > 256) {
+                    _StdOut.putText("Memory is not big enough");
+                }
+                else {
+                    // base register value from when memory was loaded
+                    var memory = _MemoryManager.checkPartition(OpCodes);
+                    if (memory < 256) {
+                        var pid = _Kernel.newProg(memory);
+                        _StdOut.putText("Successfully Loaded Process id: " + pid);
+                    }
+                    else {
+                        _StdOut.putText("No more memory.");
+                    }
+                }
             }
         }
         shellMan(args) {

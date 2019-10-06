@@ -1,4 +1,3 @@
-///<reference path="../globals.ts" />
 /* ------------
     memory.ts
 
@@ -8,12 +7,13 @@ var TSOS;
     class Memory {
         constructor() {
             //memory array
-            this.memory = [];
+            this.memorArr = [];
+            //partition is free
+            this.partition0 = false;
         }
-        //creating empty memory
         init() {
             for (var i = 0; i < 256; i++) {
-                this.memory[i] = "00";
+                this.memorArr[i] = "00";
             }
         }
     }

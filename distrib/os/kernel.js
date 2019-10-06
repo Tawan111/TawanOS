@@ -18,6 +18,8 @@ var TSOS;
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
+            _NewProcess = new TSOS.Queue(); //new process that is loaded
+            _RunningProcess = new TSOS.Queue(); //process that will run
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
@@ -29,6 +31,8 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+            // Launch memory manager
+            _MemoryManager = new TSOS.MemoryManager();
             //
             // ... more?
             //
@@ -54,6 +58,7 @@ var TSOS;
             // Unload the Device Drivers?
             // More?
             //
+            _CPU.isExecuting = false;
             this.krnTrace("end shutdown OS");
         }
         krnOnCPUClockPulse() {
@@ -104,6 +109,12 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case INVALID_IRQ:
+                    this.UpiInvalid(params);
+                    break;
+                case OUTPUT_IRQ:
+                    this.output(params);
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -160,6 +171,28 @@ var TSOS;
             bsodImage.fillStyle = "blue";
             //fillRect using the canvas' width and height
             bsodImage.fillRect(0, 0, 500, 500);
+        }
+        //new process when load in memory
+        newProg(pcb) {
+            _PID++;
+            var newId = _PID;
+            var process = new TSOS.Pcb(pcb, newId);
+            _NewProcess.enqueue(process);
+            return newId;
+        }
+        //comeplete the process and free partition
+        completeProc() {
+            _MemoryManager.freeMem(0);
+        }
+        //invalid op code detected
+        UpiInvalid(opCode) {
+            _StdOut.putText("Invalid op code: " + opCode);
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
+        }
+        //output on the canvas
+        output(chr) {
+            _StdOut.putText(chr);
         }
     }
     TSOS.Kernel = Kernel;

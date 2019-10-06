@@ -19,6 +19,8 @@ const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 100
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
+var INVALID_IRQ = 2;
+var OUTPUT_IRQ = 3;
 
 
 
@@ -31,6 +33,9 @@ var commands = ["help", "ver", "shutdown", "cls", "man", "trace", "rot13", "prom
 var theme = new Audio('https://ia600901.us.archive.org/27/items/tvtunes_7626/The%20Matrix.mp3'); //link to the Matrix theme mp3 website
 
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+var _PCB: TSOS.Pcb;
+var _MemoryManager: TSOS.MemoryManager;
+var _Memory: TSOS.Memory;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -49,6 +54,9 @@ var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue: TSOS.Queue = null;
 var _KernelInputQueue: TSOS.Queue = null; 
 var _KernelBuffers = null; 
+var _PID = -1;
+var _NewProcess;
+var _RunningProcess;
 
 // Standard input and output
 var _StdIn:  TSOS.Console = null; 

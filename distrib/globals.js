@@ -16,6 +16,8 @@ const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 seco
 const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ = 1;
+var INVALID_IRQ = 2;
+var OUTPUT_IRQ = 3;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -23,6 +25,9 @@ const KEYBOARD_IRQ = 1;
 var commands = ["help", "ver", "shutdown", "cls", "man", "trace", "rot13", "prompt", "date", "whereami", "theme", "stoptheme", "status", "bsod", "load"]; //all shell commands 
 var theme = new Audio('https://ia600901.us.archive.org/27/items/tvtunes_7626/The%20Matrix.mp3'); //link to the Matrix theme mp3 website
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+var _PCB;
+var _MemoryManager;
+var _Memory;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -36,6 +41,9 @@ var _Kernel;
 var _KernelInterruptQueue = null;
 var _KernelInputQueue = null;
 var _KernelBuffers = null;
+var _PID = -1;
+var _NewProcess;
+var _RunningProcess;
 // Standard input and output
 var _StdIn = null;
 var _StdOut = null;

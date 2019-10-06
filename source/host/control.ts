@@ -100,6 +100,10 @@ module TSOS {
                 document.getElementById("datetime").innerText = dateTime; 
             }
             setInterval(dateTime, 1000); //update the date and time every second
+
+            //creating memory
+            _Memory = new Memory();
+            _Memory.init();
            
         }
 

@@ -15,6 +15,7 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
+   <script type="text/javascript" src="distrib/host/memory.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
@@ -26,6 +27,8 @@
    <script type="text/javascript" src="distrib/os/shell.js"></script>
    <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
    <script type="text/javascript" src="distrib/os/userCommand.js"></script>
+   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
+   <script type="text/javascript" src="distrib/os/pcb.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
 
    <!-- Other Routines -->
@@ -100,6 +103,75 @@
          ></textarea>
       </label>
    </div>
+
+   <div id="divMem" style="margin-left:0px;">
+      <label>
+         Memory
+         <br>
+         <div class="memoryDisplay" id="memStorage">
+      </label>
+   </div>
+
+   <div id="divPcb" style="margin-left:0px;">
+      <label>
+         PCB
+         <br>
+         <div id="pcbDisplay">
+               <table name="pcb" id="pcb">
+                  <thead>
+                     <tr>
+                     <th> PID </th>                            
+                     <th> PC </th>
+                     <th> IR </th>
+                     <th> ACC </th>
+                     <th> X </th>
+                     <th> Y </th>
+                     <th> Z </th>
+                     <th> State </th>
+                     <th> Location </th>                          
+                     </tr>
+                  </thead>
+               <tbody id="pcbTable">
+            </table>
+         </div>
+      </label>
+   </div>
+
+</th>
+   <th>
+   <div id="divCPU" style="margin-left:0px;">
+      <label>
+         CPU 
+         <br>
+         <div id="cpuDisplay">
+         <table name="cpu" id="cpu">
+            <thead>
+               <tr>
+               <th> PC </th>
+               <th> IR </th>
+               <th> ACC </th>
+               <th> X </th>
+               <th> Y </th>
+               <th> Z </th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr>
+                  <td id="pc"> 0 </td>
+                  <td id="ir"> 0 </td>
+                  <td id="acc"> 0 </td>
+                  <td id="x"> 0 </td>
+                  <td id="y"> 0 </td>
+                  <td id="z"> 0 </td>
+               </tr>
+            </tbody>
+         </table>
+         </div>                
+      </label>
+   </div>
+</th>
+</tr>
+</table>
 </div>
 
 <p class="footerText" style="clear:both;">
