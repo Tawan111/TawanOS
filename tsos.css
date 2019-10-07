@@ -46,3 +46,27 @@ h3 {
   font-size: 8pt;
   text-align: center;
 }
+
+.memoryDisplay {
+  height: 180px;
+  width: 650px;
+  overflow-y: scroll;
+  background-color: white;
+}
+
+#pcbDisplay {
+  height: 200px;
+  width: 330px;  
+  background-color: white;  
+}
+
+#cpuDisplay {
+  height: 50px;
+  width: 160px;  
+  background-color: white;  
+}
+
+
+
+
+

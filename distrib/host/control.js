@@ -59,6 +59,9 @@ var TSOS;
         // Host Events
         //
         static hostBtnStartOS_click(btn) {
+            //creating memory
+            _Memory = new TSOS.Memory();
+            _Memory.init();
             // Disable the (passed-in) start button...
             btn.disabled = true;
             // .. enable the Halt and Reset buttons ...
@@ -96,6 +99,58 @@ var TSOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+        //table to display pcb
+        static makePcbTable(pcb) {
+            var pcbTable = document.getElementById("pcbTable");
+            var pcbRow = document.createElement("tr");
+            var pcbCell = document.createElement("td");
+            pcbRow.id = pcb.pid;
+            pcbCell.id = pcb.id;
+            pcbCell.appendChild(document.createTextNode(pcb.pid)); //pid
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.state)); //state
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.pc)); //pc
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode("0")); //ir
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.acc)); //acc
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.x)); //xreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.y)); //yreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.z)); //zreg
+            pcbRow.appendChild(pcbCell);
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(pcb.location)); //location
+            pcbRow.appendChild(pcbCell);
+            pcbTable.appendChild(pcbRow);
+        }
+        //updates the pcb table
+        static updatePcbTable(pc, ir, acc, x, y, z) {
+            var pcbTable = document.getElementById("pcbTable");
+            var pcbRow = pcbTable.rows.item(0);
+            pcbRow.cells.item(1).innerHTML = "Running";
+            pcbRow.cells.item(2).innerHTML = pc;
+            pcbRow.cells.item(3).innerHTML = ir;
+            pcbRow.cells.item(4).innerHTML = acc;
+            pcbRow.cells.item(5).innerHTML = x;
+            pcbRow.cells.item(6).innerHTML = y;
+            pcbRow.cells.item(7).innerHTML = z;
+        }
+        //empty the table after process is completed
+        static clearPcbTable() {
+            var pcbTable = document.getElementById("pcbTable");
+            pcbTable.deleteRow(0);
         }
     }
     TSOS.Control = Control;

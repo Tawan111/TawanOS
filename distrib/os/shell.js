@@ -66,6 +66,9 @@ var TSOS;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validate the user code.");
             this.commandList[this.commandList.length] = sc;
+            // run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid - Runs the process according to the id.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -241,12 +244,50 @@ var TSOS;
             var userInput = prog.value;
             //RegExp for matching hex digits
             var regExpTest = /[a-fA-F0-9]{2}/;
+            var validator = false;
             //test to see if the user input match RegExp
-            if (userInput.match(regExpTest)) {
-                _StdOut.putText("Success! Only hex digits detected.");
+            if (userInput == "") {
+                _StdOut.putText("User Program Input field is empty.");
+            }
+            else if (userInput.match(regExpTest)) {
+                validator = true;
             }
             else {
                 _StdOut.putText("Invalid! non-hex digits detected.");
+            }
+            //if hex digits are detected
+            if (validator == true) {
+                var OpCodes = userInput.split(" ");
+                if (OpCodes.length > 256) {
+                    _StdOut.putText("Memory is not big enough");
+                }
+                else {
+                    //val from memory
+                    var memory = _MemoryManager.checkPartition(OpCodes);
+                    if (memory < 256) {
+                        var pid = _Kernel.newProg(memory);
+                        _StdOut.putText("Successfully Loaded Process id: " + pid);
+                    }
+                    else {
+                        _StdOut.putText("No more memory.");
+                    }
+                }
+            }
+        }
+        shellRun(pid) {
+            if (pid != "") {
+                //user integer input must matach an existing pid
+                if (pid != _PID) {
+                    _StdOut.putText("pid: " + pid + " does not exist");
+                }
+                else {
+                    _RunningProcess.enqueue(_NewProcess.dequeue());
+                    _CPU.isExecuting = true;
+                }
+            }
+            else {
+                //if no pid detected
+                _StdOut.putText("Must input a pid");
             }
         }
         shellMan(args) {
@@ -297,6 +338,9 @@ var TSOS;
                         break;
                     case "load":
                         _StdOut.putText("Validate the user code.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Runs the process according to the id");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

@@ -67,17 +67,21 @@ module TSOS {
             */
             if (text !== "") {
                 //if the current position surpasses the canvas, advanceLine() is called
-                if (this.currentXPosition > _Canvas.width) {
-                    this.advanceLine();
+                for (var i = 0; i < text.length; i++) {
+                    var chr = text.charAt(i);
+                    var position = offset + this.currentXPosition;
                     
-                }
+                    if (position > _Canvas.width) {
+                        this.advanceLine();
+                    }
                 // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
+                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, chr);
                 // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
+                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, chr);
                 this.currentXPosition = this.currentXPosition + offset;
             }
          }
+    }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
@@ -172,6 +176,5 @@ module TSOS {
                 _KernelInputQueue.enqueue(text.charAt(i));
             }
         }
-
     }
  }
