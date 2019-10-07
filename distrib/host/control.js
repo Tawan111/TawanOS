@@ -59,6 +59,9 @@ var TSOS;
         // Host Events
         //
         static hostBtnStartOS_click(btn) {
+            //creating memory
+            _Memory = new TSOS.Memory();
+            _Memory.init();
             // Disable the (passed-in) start button...
             btn.disabled = true;
             // .. enable the Halt and Reset buttons ...
@@ -80,9 +83,6 @@ var TSOS;
                 document.getElementById("datetime").innerText = dateTime;
             }
             setInterval(dateTime, 1000); //update the date and time every second
-            //creating memory
-            _Memory = new TSOS.Memory();
-            _Memory.init();
         }
         static hostBtnHaltOS_click(btn) {
             Control.hostLog("Emergency halt", "host");
