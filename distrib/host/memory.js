@@ -26,13 +26,13 @@ var TSOS;
             memTb.className = "memTb";
             memTb.id = "memTb";
             //container for user program inputs
-            for (var i = 0; i < 80; i++) {
+            for (var i = 0; i < 32; i++) {
                 var tableCell = document.createElement("td");
                 var tableRow = document.createElement("tr");
                 var container = 8 * i;
                 tableRow.id = "row " + container;
                 //memory table output in uppercase
-                var location = "000";
+                var location = "x0";
                 var hexDigit = location + container.toString(16).toUpperCase();
                 //append the output to tablecell and tablecell to tablerow
                 tableCell.id = "data" + hexDigit.slice(-4);
@@ -62,7 +62,7 @@ var TSOS;
                 var container = 8 * i;
                 tableRow = "row " + container;
                 for (var c = 0; c < 8; c++) {
-                    var location = "000";
+                    var location = "x0";
                     data = c + container;
                     var val = location + data.toString(16).toUpperCase();
                     tableCell = val.slice(-4);

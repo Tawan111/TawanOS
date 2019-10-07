@@ -86,7 +86,7 @@
          <br>
          <textarea name="taHostLog"
                    id  ="taHostLog"
-                   rows="26"
+                   rows="23"
                    cols="48"
          ></textarea>
       </label>
@@ -106,72 +106,65 @@
 
    <div id="divMem" style="margin-left:0px;">
       <label>
-         Memory
+         Memory Display
          <br>
          <div class="memoryDisplay" id="memStorage">
       </label>
    </div>
-
-   <div id="divPcb" style="margin-left:0px;">
-      <label>
-         PCB
-         <br>
-         <div id="pcbDisplay">
-               <table name="pcb" id="pcb">
-                  <thead>
-                     <tr>
-                     <th> PID </th> 
-                     <th> State </th>                           
-                     <th> PC </th>
-                     <th> IR </th>
-                     <th> ACC </th>
-                     <th> X </th>
-                     <th> Y </th>
-                     <th> Z </th>
-                     <th> Location </th>                          
-                     </tr>
-                  </thead>
-               <tbody id="pcbTable">
+   <th>
+      <div id="divCPU" style="margin-left:0px;">
+         <label>
+            CPU Display
+            <br>
+            <div id="cpuDisplay">
+            <table name="cpu" id="cpu">
+               <thead>
+                  <tr>
+                  <th> PC </th>
+                  <th> IR </th>
+                  <th> ACC </th>
+                  <th> X </th>
+                  <th> Y </th>
+                  <th> Z </th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                  <td id="pc">--</td>
+                  <td id="ir">--</td>
+                  <td id="acc">-</td>
+                  <td id="x">-</td>
+                  <td id="y">-</td>
+                  <td id="z">-</td>
+                  </tr>
+               </tbody>
             </table>
-         </div>
+         </div>                
       </label>
    </div>
-
-</th>
-   <th>
-   <div id="divCPU" style="margin-left:0px;">
+   <div id="divPcb" style="margin-left:0px;">
       <label>
-         CPU 
+         PCB Display
          <br>
-         <div id="cpuDisplay">
-         <table name="cpu" id="cpu">
+         <div id="pcbDisplay">
+         <table name="pcb" id="pcb">
             <thead>
                <tr>
+               <th> PID </th> 
+               <th> State </th>                           
                <th> PC </th>
                <th> IR </th>
                <th> ACC </th>
                <th> X </th>
                <th> Y </th>
                <th> Z </th>
+               <th> Location </th>                          
                </tr>
             </thead>
-            <tbody>
-               <tr>
-                  <td id="pc"> 0 </td>
-                  <td id="ir"> 0 </td>
-                  <td id="acc"> 0 </td>
-                  <td id="x"> 0 </td>
-                  <td id="y"> 0 </td>
-                  <td id="z"> 0 </td>
-               </tr>
-            </tbody>
-         </table>
-         </div>                
-      </label>
+         <tbody id="pcbTable">
+      </table>
    </div>
-</th>
-</tr>
-</table>
+</label>
 </div>
 
 <p class="footerText" style="clear:both;">
