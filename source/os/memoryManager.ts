@@ -24,7 +24,7 @@
                 for (var i = memory; i <uPI.length; i++) {
                     _Memory.memorArr[i] = uPI[i];
                 }  
-                _Memory.updateMemDisplay(memory);
+                Control.updateMemDisplay(memory);
                 return memory;
             }
             //get memory
@@ -44,7 +44,7 @@
                 if(memory == 0) {
                     _Memory.partition0 = false;
                 } 
-                _Memory.updateMemDisplay(memory);
+                Control.updateMemDisplay(memory);
             }
         }
     }

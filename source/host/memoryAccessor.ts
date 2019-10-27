@@ -16,7 +16,7 @@ module TSOS {
             this.partition0 = false;
             this.partition1 = false;
             this.partition2 = false;
-            _Memory.memDisplay();
+            Control.memDisplay();
         }
         //find and read the partition
         public findPart(part, max) {
@@ -25,7 +25,7 @@ module TSOS {
         //will write the partition
         public usePart(part, arr, data){
             //TODO
-           _Memory.updateMemDisplay(part);
+           Control.updateMemDisplay(part);
         }
     }
 } 

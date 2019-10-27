@@ -44,7 +44,7 @@ var TSOS;
             this.IR = memoryOutput;
             this.executeProg(memoryOutput);
             //transfer output to the cpu display
-            this.cpuDisplay();
+            TSOS.Control.cpuDisplay();
             if (this.isExecuting) {
                 TSOS.Control.updatePcbTable(this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag);
             }
@@ -101,7 +101,7 @@ var TSOS;
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(INVALID_IRQ, opCode));
                         _Kernel.completeProc();
                         this.init();
-                        this.cpuDisplay();
+                        TSOS.Control.cpuDisplay();
                         break;
                 }
             }
@@ -174,7 +174,7 @@ var TSOS;
         break() {
             _Kernel.completeProc();
             this.init();
-            this.cpuDisplay();
+            TSOS.Control.cpuDisplay();
         }
         //compare memory to X
         compareMemToXreg() {
@@ -237,15 +237,6 @@ var TSOS;
             //output
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(OUTPUT_IRQ, str));
             this.PC++;
-        }
-        cpuDisplay() {
-            var cpuDisplay = document.getElementById("cpu");
-            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = this.PC.toString();
-            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = this.IR.toString();
-            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = this.Acc.toString();
-            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = this.Xreg.toString();
-            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = this.Yreg.toString();
-            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = this.Zflag.toString();
         }
     }
     TSOS.Cpu = Cpu;

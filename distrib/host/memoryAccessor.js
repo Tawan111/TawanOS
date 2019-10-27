@@ -16,7 +16,7 @@ var TSOS;
             this.partition0 = false;
             this.partition1 = false;
             this.partition2 = false;
-            _Memory.memDisplay();
+            TSOS.Control.memDisplay();
         }
         //find and read the partition
         findPart(part, max) {
@@ -25,7 +25,7 @@ var TSOS;
         //will write the partition
         usePart(part, arr, data) {
             //TODO
-            _Memory.updateMemDisplay(part);
+            TSOS.Control.updateMemDisplay(part);
         }
     }
     TSOS.MemoryAccessor = MemoryAccessor;

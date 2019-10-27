@@ -20,7 +20,7 @@ var TSOS;
             for (var i = memory; i < uPI.length; i++) {
                 _Memory.memorArr[i] = uPI[i];
             }
-            _Memory.updateMemDisplay(memory);
+            TSOS.Control.updateMemDisplay(memory);
             return memory;
         }
         //get memory
@@ -39,7 +39,7 @@ var TSOS;
             if (memory == 0) {
                 _Memory.partition0 = false;
             }
-            _Memory.updateMemDisplay(memory);
+            TSOS.Control.updateMemDisplay(memory);
         }
     }
     TSOS.MemoryManager = MemoryManager;

@@ -152,6 +152,68 @@ var TSOS;
             var pcbTable = document.getElementById("pcbTable");
             pcbTable.deleteRow(0);
         }
+        //create a table for memory
+        static memDisplay() {
+            var memStorage = document.getElementById("memStorage");
+            var memBody = document.createElement("tbody");
+            var memTb = document.createElement("table");
+            memTb.className = "memTb";
+            memTb.id = "memTb";
+            //container for user program inputs
+            for (var i = 0; i < 32; i++) {
+                var tableCell = document.createElement("td");
+                var tableRow = document.createElement("tr");
+                var container = 8 * i;
+                tableRow.id = "row " + container;
+                //memory table output in uppercase
+                var location = "x0";
+                var hexDigit = location + container.toString(16).toUpperCase();
+                //append the output to tablecell and tablecell to tablerow
+                tableCell.id = "data" + hexDigit.slice(-4);
+                tableCell.appendChild(document.createTextNode(hexDigit.slice(-4)));
+                tableRow.appendChild(tableCell);
+                for (var c = 0; c < 8; c++) {
+                    tableCell = document.createElement("td");
+                    var data = c + container;
+                    var val = location + data.toString(16).toUpperCase();
+                    tableCell.id = val.slice(-4);
+                    tableCell.appendChild(document.createTextNode(_Memory.memorArr[data]));
+                    tableRow.appendChild(tableCell);
+                }
+                memBody.appendChild(tableRow);
+            }
+            memTb.appendChild(memBody);
+            memStorage.appendChild(memTb);
+        }
+        //memory table will show the newly loaded process
+        static updateMemDisplay(display) {
+            var memTb = document.getElementById("memTb");
+            var tableRow;
+            var data;
+            var tableCell;
+            var max = display + 256;
+            for (var i = display; i < max / 8; i++) {
+                var container = 8 * i;
+                tableRow = "row " + container;
+                for (var c = 0; c < 8; c++) {
+                    var location = "x0";
+                    data = c + container;
+                    var val = location + data.toString(16).toUpperCase();
+                    tableCell = val.slice(-4);
+                    memTb.rows.namedItem(tableRow).cells.namedItem(tableCell).innerHTML = _Memory.memorArr[data];
+                }
+            }
+        }
+        //display for CPU
+        static cpuDisplay() {
+            var cpuDisplay = document.getElementById("cpu");
+            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = _CPU.PC.toString();
+            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = _CPU.IR.toString();
+            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = _CPU.Acc.toString();
+            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = _CPU.Xreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = _CPU.Yreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = _CPU.Zflag.toString();
+        }
     }
     TSOS.Control = Control;
 })(TSOS || (TSOS = {}));
