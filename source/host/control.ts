@@ -160,9 +160,9 @@ module TSOS {
             pcbTable.appendChild(pcbRow);
         } 
         //updates the pcb table
-        public static updatePcbTable(pc, ir, acc, x, y, z): void {
+        public static updatePcbTable(pid, pc, ir, acc, x, y, z): void {
             var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");                
-            var pcbRow = pcbTable.rows.item(0);
+            var pcbRow = <HTMLTableRowElement> document.getElementById(pid);
             pcbRow.cells.item(1).innerHTML = "Running";
             pcbRow.cells.item(2).innerHTML = pc;
             pcbRow.cells.item(3).innerHTML = ir;
@@ -171,10 +171,12 @@ module TSOS {
             pcbRow.cells.item(6).innerHTML = y;
             pcbRow.cells.item(7).innerHTML = z;
         }
-        //empty the table after process is completed
-        public static clearPcbTable(): void {
-            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");     
-            pcbTable.deleteRow(0);    
+        //remove the pid that finish running
+        public static clearPcbTable(pid): void {
+            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");      
+            var pcbRow = <HTMLTableRowElement> document.getElementById(pid);
+            //remove the pid row
+            pcbRow.parentNode.removeChild(pcbRow);   
         }
 
          //create a table for memory
@@ -186,7 +188,7 @@ module TSOS {
             memTb.id = "memTb";
                 
             //container for user program inputs
-            for (var i = 0; i < 32; i++) {
+            for (var i = 0; i < 96; i++) {
                 var tableCell = <HTMLTableCellElement> document.createElement("td");
                 var tableRow = <HTMLTableRowElement> document.createElement("tr");
                 var container = 8 * i;
@@ -222,10 +224,9 @@ module TSOS {
             var tableRow;
             var data;                    
             var tableCell;
-            var max = display + 256;
 
-            for (var i = display; i < max/8 ; i++) {
-                var container = 8 * i;
+            for (var i = 0; i < 32 ; i++) {
+                var container = ((8 * i) + display);
                 tableRow = "row " + container;
     
                 for (var c = 0; c < 8; c ++) {

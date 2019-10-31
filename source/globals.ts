@@ -37,6 +37,7 @@ var _PCB: TSOS.Pcb;
 var _MemoryManager: TSOS.MemoryManager;
 var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor;
+var _CpuScheduler: TSOS.CpuScheduler; 
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -55,9 +56,10 @@ var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue: TSOS.Queue = null;
 var _KernelInputQueue: TSOS.Queue = null; 
 var _KernelBuffers = null; 
-var _PID = -1;
-var _NewProcess;
-var _RunningProcess;
+var _PID = -1; //pid will start at 0 
+var _NewProcess; //resident list
+var _ReadyProcess;
+var _RunningProcess; //running processes
 
 // Standard input and output
 var _StdIn:  TSOS.Console = null; 

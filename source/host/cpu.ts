@@ -38,10 +38,18 @@ module TSOS {
         public cycle(): void {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
-            //run the process
-            if(this.PC < 1){
-                var pcb = _NewProcess.dequeue();
-                Control.updatePcbTable(this.PC, 
+            //run the program
+            var program;
+
+            if(this.PC == 0){
+                program = _ReadyProcess.dequeue();
+                //change the program state to running
+                //move the program from ready to running
+                program.state = "Running";
+                _RunningProcess.enqueue(program);
+                //update the pcb table
+                Control.updatePcbTable(program.pid,
+                                       this.PC, 
                                        this.IR, 
                                        this.Acc, 
                                        this.Xreg, 
@@ -55,7 +63,8 @@ module TSOS {
             //transfer output to the cpu display
             Control.cpuDisplay();
             if(this.isExecuting){
-                Control.updatePcbTable(this.PC, 
+                Control.updatePcbTable(program.pid,
+                                       this.PC, 
                                        this.IR, 
                                        this.Acc, 
                                        this.Xreg, 
@@ -63,12 +72,12 @@ module TSOS {
                                        this.Zflag);
             }
         }
-
+        //will fetch from memory manager
         public retrieve(ProgC) {
             return _MemoryManager.getMem(ProgC);
 
         }
-
+        //switch statement for op codes
         public executeProg(opCode) {
             if (opCode.length > 0) {
                 switch (opCode) {

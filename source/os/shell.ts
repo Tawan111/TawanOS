@@ -121,6 +121,12 @@ module TSOS {
                                 "<pid - Runs the process according to the id.");
             this.commandList[this.commandList.length] = sc;
 
+             // clearmem
+             sc = new ShellCommand(this.shellClearmem,
+                                "clearmem",
+                                "- Will clear all memory");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -307,7 +313,7 @@ module TSOS {
         public shellBsod(args: string[]) {
             _Kernel.krnTrapError('OS crashed');
         }
-
+        //load program
         public shellLoad(args: string[]) {
             var prog = <HTMLInputElement>document.getElementById('taProgramInput');
             //has to be value
@@ -315,23 +321,29 @@ module TSOS {
             //RegExp for matching hex digits
             var regExpTest: RegExp = /[a-fA-F0-9]{2}/;
             var validator = false;
-            //test to see if the user input match RegExp
+            //test to see if the user input match RegExp 
+            //also check if the input field is empty
             if (userInput == "") {
                 _StdOut.putText("User Program Input field is empty.")
             } else if (userInput.match(regExpTest)){
+                //validator is true when valid hex digits are detected
                 validator = true;
             } else {
+                //if the user input field contain non-hex digits
                 _StdOut.putText("Invalid! non-hex digits detected.");
             }
             //if hex digits are detected
             if (validator == true) {
                 var OpCodes = userInput.split(" ");
-                if (OpCodes.length > 256){
+                //if memory is above limit
+                if (OpCodes.length == 769){
                     _StdOut.putText("Memory is not big enough");
                 } else {
                     //val from memory
                     var memory = _MemoryManager.checkPartition(OpCodes);
-                    if (memory < 256){
+                    //if memory have not reach its limit
+                    if (memory < 768){
+                        //call kernel to create new program
                         var pid = _Kernel.newProg(memory);
                         _StdOut.putText("Successfully Loaded Process id: " + pid);                 
                     } else {
@@ -341,21 +353,22 @@ module TSOS {
             }
             
         }
-
+        //run selected program
         public shellRun(pid) {
-            if (pid != ""){
-                //user integer input must matach an existing pid
-                if(pid != _PID) {
-                    _StdOut.putText("pid: " + pid + " does not exist");                    
-                } else {
-                    _RunningProcess.enqueue(_NewProcess.dequeue());
-                    _CPU.isExecuting = true;
-                    }
+            //user must input a pid number
+            if (pid != "") {
+                //call kernel to run the selected program
+                _Kernel.runProc(pid);
                 } else {
                     //if no pid detected
                     _StdOut.putText("Must input a pid");
              }  
           }
+        //clear all memory
+        public shellClearmem(args: string[]) {
+            //call memory manager to clear all partitions
+            _MemoryManager.clearMem();
+        }
 
         public shellMan(args: string[]) {
             if (args.length > 0) {
@@ -408,6 +421,9 @@ module TSOS {
                         break;
                     case "run":
                         _StdOut.putText("Runs the process according to the id");
+                        break;
+                    case "clearmem":
+                        _StdOut.putText("Clears all memory");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

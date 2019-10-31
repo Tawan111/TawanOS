@@ -8,11 +8,13 @@ var TSOS;
         constructor() {
             //memory array
             this.memorArr = [];
-            //partition is free
+            //all partitions are free
             this.partition0 = false;
+            this.partition1 = false;
+            this.partition2 = false;
         }
         init() {
-            for (var i = 0; i < 256; i++) {
+            for (var i = 0; i < 768; i++) {
                 this.memorArr[i] = "00";
             }
             //display the memory

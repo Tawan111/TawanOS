@@ -19,7 +19,8 @@ var TSOS;
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
             _NewProcess = new TSOS.Queue(); //new process that is loaded
-            _RunningProcess = new TSOS.Queue(); //process that will run
+            _ReadyProcess = new TSOS.Queue(); //process that will run
+            _RunningProcess = new TSOS.Queue(); //processes that are running
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
@@ -31,8 +32,9 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
-            // Launch memory manager
+            //launching memory manager and cpu scheduler
             _MemoryManager = new TSOS.MemoryManager();
+            _CpuScheduler = new TSOS.CpuScheduler();
             //
             // ... more?
             //
@@ -172,19 +174,24 @@ var TSOS;
             //fillRect using the canvas' width and height
             bsodImage.fillRect(0, 0, 500, 500);
         }
-        //new process when load in memory
-        newProg(pcb) {
+        //new program will be created with a unique pid
+        newProg(pid) {
+            //pid incrementally increase
             _PID++;
-            var proc = new TSOS.Pcb(pcb, _PID);
-            _NewProcess.enqueue(proc);
+            //give the program a pid value
+            var program = new TSOS.Pcb(pid, _PID);
+            _NewProcess.enqueue(program);
             //print pcb table
-            TSOS.Control.makePcbTable(proc);
+            TSOS.Control.makePcbTable(program);
+            //return the new pid
             return _PID;
         }
-        //comeplete the process and free partition
+        //comeplete the process and free memory
         completeProc() {
-            _MemoryManager.freeMem(0);
-            TSOS.Control.clearPcbTable();
+            var program = _RunningProcess.dequeue();
+            _MemoryManager.freeMem(program.pcb);
+            //remove the finish program from the PCB display 
+            TSOS.Control.clearPcbTable(program.pid);
         }
         //invalid op code detected
         UpiInvalid(opCode) {
@@ -195,6 +202,24 @@ var TSOS;
         //output on the canvas
         output(chr) {
             _StdOut.putText(chr);
+        }
+        //run a program
+        runProc(pid) {
+            var program = _NewProcess.dequeue();
+            var select = false;
+            while (program.pid != pid) {
+                _NewProcess.enqueue(program);
+                program = _NewProcess.dequeue();
+                select = !select;
+            }
+            if (select) {
+                _NewProcess.enqueue(_NewProcess.dequeue());
+            }
+            //change the program state to ready
+            program.state = "Ready";
+            _ReadyProcess.enqueue(program);
+            //CPU will start
+            _CPU.isExecuting = true;
         }
     }
     TSOS.Kernel = Kernel;

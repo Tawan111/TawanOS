@@ -21,7 +21,8 @@
                 _KernelBuffers = new Array();         // Buffers... for the kernel.
                 _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
                 _NewProcess = new Queue(); //new process that is loaded
-                _RunningProcess = new Queue(); //process that will run
+                _ReadyProcess = new Queue(); //process that will run
+                _RunningProcess = new Queue(); //processes that are running
     
                 // Initialize the console.
                 _Console = new Console();             // The command line interface / console I/O device.
@@ -36,8 +37,9 @@
                 _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
                 _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
                 this.krnTrace(_krnKeyboardDriver.status);
-                // Launch memory manager
+                //launching memory manager and cpu scheduler
                 _MemoryManager = new MemoryManager();
+                _CpuScheduler = new CpuScheduler();
     
                 //
                 // ... more?
@@ -192,19 +194,24 @@
                 //fillRect using the canvas' width and height
                 bsodImage.fillRect(0,0,500,500);
             }
-            //new process when load in memory
-            public newProg(pcb) {
+            //new program will be created with a unique pid
+            public newProg(pid) {
+                //pid incrementally increase
                 _PID++;  
-                var proc = new Pcb(pcb, _PID);
-                 _NewProcess.enqueue(proc);
+                //give the program a pid value
+                var program = new Pcb(pid, _PID);
+                _NewProcess.enqueue(program);
                 //print pcb table
-                Control.makePcbTable(proc);
+                Control.makePcbTable(program);
+                //return the new pid
                 return _PID;
             }
-            //comeplete the process and free partition
+            //comeplete the process and free memory
             public completeProc(){
-                _MemoryManager.freeMem(0);
-                Control.clearPcbTable();
+                var program = _RunningProcess.dequeue();
+                _MemoryManager.freeMem(program.pcb);
+                //remove the finish program from the PCB display 
+                Control.clearPcbTable(program.pid);
             }
             //invalid op code detected
             public UpiInvalid(opCode){
@@ -215,6 +222,24 @@
             //output on the canvas
             public output(chr){
                 _StdOut.putText(chr);
+            }
+            //run a program
+            public runProc(pid) {
+                var program = _NewProcess.dequeue();
+                var select = false;
+                while (program.pid != pid){
+                    _NewProcess.enqueue(program);
+                    program = _NewProcess.dequeue();
+                    select = !select;
+                }
+                if (select){
+                    _NewProcess.enqueue(_NewProcess.dequeue());
+                }
+                //change the program state to ready
+                program.state = "Ready";
+                _ReadyProcess.enqueue(program);
+                 //CPU will start
+                _CPU.isExecuting = true;
             }
         }
     }

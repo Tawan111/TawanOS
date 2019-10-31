@@ -29,6 +29,7 @@ var _PCB;
 var _MemoryManager;
 var _Memory;
 var _MemoryAccessor;
+var _CpuScheduler;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -42,8 +43,9 @@ var _Kernel;
 var _KernelInterruptQueue = null;
 var _KernelInputQueue = null;
 var _KernelBuffers = null;
-var _PID = -1;
+var _PID = -1; //pid will start at 0 
 var _NewProcess;
+var _ReadyProcess;
 var _RunningProcess;
 // Standard input and output
 var _StdIn = null;
