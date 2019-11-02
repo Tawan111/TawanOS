@@ -51,11 +51,11 @@ var TSOS;
         //get memory
         getMem(arr) {
             //return location value to cpu when fetch
-            return _Memory.memorArr[_programLocation + arr];
+            return _Memory.memorArr[_ProgramLocation + arr];
         }
         //update memory
         updateMem(memAddress, d) {
-            _Memory.memorArr[parseInt(memAddress, 16) + _programLocation] = d.toString(16);
+            _Memory.memorArr[parseInt(memAddress, 16) + _ProgramLocation] = d.toString(16);
         }
         //clear the memory display
         freeMem(memory) {

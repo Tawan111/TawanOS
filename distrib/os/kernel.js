@@ -76,7 +76,7 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                //check the scheduler
+                //check the scheduler for RR
                 _CpuScheduler.scheduler();
                 _CPU.cycle();
                 //update the cpu display
@@ -84,7 +84,7 @@ var TSOS;
                 //check if the program is complete
                 if (_CPU.IR !== "00") {
                     //update the pcb display if the program still have to run
-                    TSOS.Control.updatePcbTable(_programPid, "Running");
+                    TSOS.Control.updatePcbTable(_ProgramPid, "Running");
                 }
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
@@ -126,7 +126,7 @@ var TSOS;
                 case OUTPUT_IRQ: //program result
                     this.output(params);
                     break;
-                case CS_IRQ: //context switch
+                case CS_IRQ: //context switch will be called by scheduler
                     this.contextSwitch();
                     break;
                 default:
@@ -192,6 +192,8 @@ var TSOS;
             //give the program a pid value
             var program = new TSOS.Pcb(pid, _PID);
             _NewProcess.enqueue(program);
+            //add the pid to the waiting pid array
+            _WaitingPID.push(program.pid);
             //print pcb table
             TSOS.Control.makePcbTable(program);
             //return the new pid
@@ -200,11 +202,13 @@ var TSOS;
         //comeplete the program and free memory
         completeProg() {
             //free memory base on the program location in memory
-            _MemoryManager.freeMem(_programLocation);
+            _MemoryManager.freeMem(_ProgramLocation);
             //clear the program from pcb display
-            TSOS.Control.clearPcbTable(_programPid);
+            TSOS.Control.clearPcbTable(_ProgramPid);
+            //remove the pid from the running pid array
+            _RunningPID.splice(_RunningPID.indexOf(_ProgramPid), 1);
             //the program cycle is = to the set quantum
-            _CpuScheduler.programCycle = quantum;
+            _CpuScheduler.programCycle = _Quantum;
             //checks the scheduler to initialize the next program
             _CpuScheduler.scheduler();
         }
@@ -260,7 +264,6 @@ var TSOS;
         runAllProg() {
             //while there are more than 0 program in the resident list
             while (_NewProcess.getSize() > 0) {
-                //all programs are in running queue
                 _RunningProcess.enqueue(_NewProcess.dequeue());
             }
             //scheduler is running
@@ -272,7 +275,7 @@ var TSOS;
         contextSwitch() {
             //if the current program is not complete, it will be saved 
             if (_CPU.IR != "00") {
-                var runningProgram = new TSOS.Pcb(_programLocation, _programPid);
+                var runningProgram = new TSOS.Pcb(_ProgramLocation, _ProgramPid);
                 //chnage the program state from running to waiting
                 runningProgram.state = "Waiting";
                 //save pc to cpu
@@ -285,10 +288,13 @@ var TSOS;
                 runningProgram.y = _CPU.Yreg;
                 //save zflag to cpu
                 runningProgram.z = _CPU.Zflag;
-                runningProgram.base = _programLocation;
+                //remove the pid from the running pid array
+                _RunningPID.splice(_RunningPID.indexOf(_ProgramPid), 1);
+                //add the pid to the waiting pid array
+                _WaitingPID.push(runningProgram.pid);
                 _RunningProcess.enqueue(runningProgram);
                 //update to the pcb display
-                TSOS.Control.updatePcbTable(_programPid, runningProgram.state);
+                TSOS.Control.updatePcbTable(_ProgramPid, runningProgram.state);
             }
             //program in queue is loaded
             var queueProgram = _RunningProcess.dequeue();
@@ -304,10 +310,14 @@ var TSOS;
             _CPU.Yreg = queueProgram.y;
             //updating zflag
             _CPU.Zflag = queueProgram.z;
-            _programPid = queueProgram.pid;
-            _programLocation = queueProgram.pcb;
+            _ProgramPid = queueProgram.pid;
+            _ProgramLocation = queueProgram.pcb;
+            //remove the pid from the waiting pid array
+            _WaitingPID.splice(_WaitingPID.indexOf(_ProgramPid), 1);
+            //add the pid to the running pid array
+            _RunningPID.push(queueProgram.pid);
             //update to the pcb display
-            TSOS.Control.updatePcbTable(_programPid, queueProgram.state);
+            TSOS.Control.updatePcbTable(_ProgramPid, queueProgram.state);
         }
     }
     TSOS.Kernel = Kernel;

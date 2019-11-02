@@ -17,18 +17,23 @@ var TSOS;
             program.state = "Running";
             //update the PCB table
             TSOS.Control.updatePcbTable(program.pid, program.state);
-            _programPid = program.pid;
-            _programLocation = program.pcb;
+            _ProgramPid = program.pid;
+            _ProgramLocation = program.pcb;
+            //remove the pid from the waiting pid array
+            _WaitingPID.splice(_WaitingPID.indexOf(_ProgramPid), 1);
+            //add the pid to the running pid array
+            _RunningPID.push(program.pid);
         }
         //check the scheduler for RR
         scheduler() {
             //the program cycle increments after each cycle
             this.programCycle++;
             //checks when the program cycle exceeds the quantum
-            if (this.programCycle > quantum) {
+            if (this.programCycle > _Quantum) {
                 //initialize context switch if there is another program in the queue
                 if (!_RunningProcess.isEmpty()) {
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CS_IRQ, _programPid));
+                    //call context switch
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CS_IRQ, _ProgramPid));
                 }
                 else {
                     //when there is no other program, check if the current program is complete

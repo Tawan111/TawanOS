@@ -47,9 +47,11 @@ var _KernelBuffers = null;
 var _PID = -1; //pid will start at 0 
 var _NewProcess; //resident list
 var _RunningProcess; //running list
-var _programPid = 0; //running program pid
-var _programLocation = 0; //location of program in memory
-var quantum = 6; //default quantum is 6
+var _ProgramPid = 0; //running program pid
+var _ProgramLocation = 0; //location of program in memory
+var _Quantum = 6; //default quantum is 6
+var _WaitingPID = []; //contains pids of waiting programs
+var _RunningPID = []; //contains pids of running programs
 // Standard input and output
 var _StdIn = null;
 var _StdOut = null;

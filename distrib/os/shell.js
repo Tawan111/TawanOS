@@ -75,6 +75,18 @@ var TSOS;
             // runall
             sc = new TSOS.ShellCommand(this.shellRunall, "runall", "- Will run all programs");
             this.commandList[this.commandList.length] = sc;
+            // ps
+            sc = new TSOS.ShellCommand(this.shellPs, "ps", "- display the PID and state of all processes");
+            this.commandList[this.commandList.length] = sc;
+            // kill
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- kill one process");
+            this.commandList[this.commandList.length] = sc;
+            // killall
+            sc = new TSOS.ShellCommand(this.shellKillall, "killall", "- kill all processes");
+            this.commandList[this.commandList.length] = sc;
+            // quantum
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "- let the user set the Round Robin quantum (measured in cpu cycles)");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -291,6 +303,7 @@ var TSOS;
         shellRun(pid) {
             //check if a pid is entered
             if (pid != "") {
+                //check if there's any program loaded
                 if (_NewProcess.isEmpty()) {
                     _StdOut.putText("There is no program loaded.");
                 }
@@ -318,6 +331,37 @@ var TSOS;
             else {
                 //call kernel to run all programs
                 _Kernel.runAllProg();
+            }
+        }
+        //display loaded programs in their current state
+        shellPs(args) {
+            //check if both waiting and running programs are empty
+            if (_WaitingPID.length == 0 && _RunningPID.length == 0) {
+                _StdOut.putText("No program loaded");
+            }
+            else {
+                //print the list of programs that are waiting and running
+                _StdOut.putText("Waiting: " + _WaitingPID.toString());
+                _StdOut.advanceLine();
+                _StdOut.putText("Running: " + _RunningPID.toString());
+            }
+        }
+        //kill a program
+        shellKill(pid) {
+        }
+        //kill all programs
+        shellKillall(args) {
+        }
+        //set quantum for RR
+        shellQuantum(args) {
+            //check for an input and if the input is a positive integer using regular expression to test
+            if (args != "" && /^\d*$/.test(args)) {
+                //update the quantum to integer that user input
+                _Quantum = args;
+                //if the user input is not an integer or is empty
+            }
+            else {
+                _StdOut.putText("Must input a quantum value.");
             }
         }
         shellMan(args) {
@@ -377,6 +421,18 @@ var TSOS;
                         break;
                     case "runall":
                         _StdOut.putText("Run all programs");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Display the PID and state of all processes");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Kill one process");
+                        break;
+                    case "killall":
+                        _StdOut.putText("kill all process");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Let the user set the Round Robin quantum (measured in cpu cycles)");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

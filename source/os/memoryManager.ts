@@ -52,11 +52,11 @@
             //get memory
             public getMem(arr){
                 //return location value to cpu when fetch
-                return _Memory.memorArr[_programLocation + arr];
+                return _Memory.memorArr[_ProgramLocation + arr];
             }
             //update memory
             public updateMem(memAddress, d): void { 
-                _Memory.memorArr[parseInt(memAddress, 16) + _programLocation] = d.toString(16);
+                _Memory.memorArr[parseInt(memAddress, 16) + _ProgramLocation] = d.toString(16);
             }
             //clear the memory display
             public freeMem(memory): void {

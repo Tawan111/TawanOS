@@ -177,6 +177,7 @@ module TSOS {
         }
         //break
         public break() {
+            //call kernel to complete program
             _Kernel.completeProg();
 
         }

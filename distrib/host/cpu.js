@@ -164,6 +164,7 @@ var TSOS;
         }
         //break
         break() {
+            //call kernel to complete program
             _Kernel.completeProg();
         }
         //compare memory to X
