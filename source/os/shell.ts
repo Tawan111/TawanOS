@@ -127,6 +127,12 @@ module TSOS {
                                 "- Will clear all memory");
             this.commandList[this.commandList.length] = sc;
 
+             // runall
+             sc = new ShellCommand(this.shellRunall,
+                                "runall",
+                                "- Will run all programs");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -337,7 +343,7 @@ module TSOS {
                 var OpCodes = userInput.split(" ");
                 //if memory is above limit
                 if (OpCodes.length == 769){
-                    _StdOut.putText("Memory is not big enough");
+                    _StdOut.putText("Memory is not big enough.");
                 } else {
                     //val from memory
                     var memory = _MemoryManager.checkPartition(OpCodes);
@@ -355,21 +361,34 @@ module TSOS {
         }
         //run selected program
         public shellRun(pid) {
-            //user must input a pid number
+            //check if a pid is entered
             if (pid != "") {
-                //call kernel to run the selected program
-                _Kernel.runProc(pid);
+                if (_NewProcess.isEmpty()){
+                    _StdOut.putText("There is no program loaded.");
                 } else {
-                    //if no pid detected
-                    _StdOut.putText("Must input a pid");
-             }  
-          }
+                    //call kernel to run a program
+                    _Kernel.runProg(pid);
+                } 
+              //if no pid is entered
+            } else {
+                _StdOut.putText("Must input a PID.");
+            }  
+        }
         //clear all memory
         public shellClearmem(args: string[]) {
             //call memory manager to clear all partitions
             _MemoryManager.clearMem();
         }
-
+        //run all programs
+        public shellRunall(args) {
+            //check if there any program loaded
+            if (_NewProcess.isEmpty()){
+                _StdOut.putText("There is no program loaded.");
+            } else {
+                //call kernel to run all programs
+                _Kernel.runAllProg();
+            } 
+        }
         public shellMan(args: string[]) {
             if (args.length > 0) {
                 var topic = args[0];
@@ -424,6 +443,9 @@ module TSOS {
                         break;
                     case "clearmem":
                         _StdOut.putText("Clears all memory");
+                        break;
+                    case "runall":
+                        _StdOut.putText("Run all programs");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:

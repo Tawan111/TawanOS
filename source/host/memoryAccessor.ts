@@ -6,7 +6,7 @@ module TSOS {
 
     export class MemoryAccessor {
            
-        //three partitions for next project
+        //three partitions
         public partition0 = false;
         public partition1 = false;
         public partition2 = false;

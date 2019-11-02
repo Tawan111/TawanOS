@@ -5,55 +5,53 @@
 var TSOS;
 (function (TSOS) {
     class MemoryManager {
+        constructor() {
+            this.memory = 0;
+        }
         checkPartition(uPI) {
-            var memory = 0;
             //check all partitions
             if (_Memory.partition0) {
                 if (_Memory.partition1) {
                     if (_Memory.partition2) {
                         //all partitions are taken
-                        memory = 769;
+                        this.memory = 769;
                     }
                     else {
                         //partition 2 is taken
                         _Memory.partition2 = true;
-                        memory = 512;
+                        this.memory = 512;
                     }
                 }
                 else {
                     //partition 1 is taken
                     _Memory.partition1 = true;
-                    memory = 256;
+                    this.memory = 256;
                 }
             }
             else {
                 //partition 0 is taken
                 _Memory.partition0 = true;
-                memory = 0;
+                this.memory = 0;
             }
             //if memory is not full
-            if (memory != 769) {
+            if (this.memory != 769) {
                 //UPI will be store in memory
                 for (var i = 0; i < uPI.length; i++) {
-                    _Memory.memorArr[memory + i] = uPI[i];
+                    _Memory.memorArr[this.memory + i] = uPI[i];
                 }
                 //the stored UPI will be updated in the memory display
-                TSOS.Control.updateMemDisplay(memory);
+                TSOS.Control.updateMemDisplay(this.memory);
             }
-            return memory;
+            return this.memory;
         }
         //get memory
         getMem(arr) {
-            //return value to cpu when fetch
-            return _Memory.memorArr[_RunningProcess.q[0].pcb + arr];
+            //return location value to cpu when fetch
+            return _Memory.memorArr[_programLocation + arr];
         }
         //update memory
         updateMem(memAddress, d) {
-            var program = _RunningProcess.dequeue();
-            _RunningProcess.enqueue(program);
-            _Memory.memorArr[parseInt(memAddress, 16) + program.pcb] = d.toString(16);
-            //update the memory display
-            TSOS.Control.updateMemDisplay(0);
+            _Memory.memorArr[parseInt(memAddress, 16) + _programLocation] = d.toString(16);
         }
         //clear the memory display
         freeMem(memory) {
@@ -84,6 +82,24 @@ var TSOS;
             _Memory.partition1 = false;
             this.freeMem(512);
             _Memory.partition2 = false;
+        }
+        //TODO base and limit 
+        baseLimit(base) {
+            if (this.memory == 0) {
+                this.base = 0;
+                this.limit = "FF";
+                return this.base;
+            }
+            if (this.memory == 256) {
+                this.base = 100;
+                this.limit = "1FF";
+                return this.base;
+            }
+            if (this.memory == 512) {
+                this.base = 200;
+                this.limit = "2FF";
+                return this.base;
+            }
         }
     }
     TSOS.MemoryManager = MemoryManager;

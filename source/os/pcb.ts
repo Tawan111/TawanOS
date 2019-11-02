@@ -10,7 +10,7 @@ module TSOS {
     export class Pcb {
         //values that will be display are pid, state, pc, ir, acc, x, y, z, and location    
         public pid: number;
-        public state: string = "New";
+        public state: string = "Waiting";
         public pc: number = 0;
         public ir: string = "00";
         public acc: number = 0;
@@ -18,14 +18,16 @@ module TSOS {
         public y: number = 0;
         public z: number = 0; 
         public location: string = "Memory";
+        public base: number = 0;
+        public limit: string;
         public pcb: number;
         public max: number;
     
         constructor(pcb, pid) {
             this.pcb = pcb;
             this.pid = pid;
-            this.state = "New";
-            this.max = pcb + 255;
+            this.state = "Waiting";
+            this.max = 255;
         }
     }
 }

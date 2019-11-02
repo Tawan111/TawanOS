@@ -130,7 +130,6 @@ module TSOS {
             var pcbRow = <HTMLTableRowElement> document.createElement("tr");
             var pcbCell = <HTMLTableCellElement> document.createElement("td");
             pcbRow.id = pcb.pid;
-            pcbCell.id = pcb.id;
             pcbCell.appendChild(document.createTextNode(pcb.pid)); //pid
             pcbRow.appendChild(pcbCell);
             pcbCell = document.createElement("td");    
@@ -160,16 +159,16 @@ module TSOS {
             pcbTable.appendChild(pcbRow);
         } 
         //updates the pcb table
-        public static updatePcbTable(pid, pc, ir, acc, x, y, z): void {
+        public static updatePcbTable(pid, state): void {
             var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");                
             var pcbRow = <HTMLTableRowElement> document.getElementById(pid);
-            pcbRow.cells.item(1).innerHTML = "Running";
-            pcbRow.cells.item(2).innerHTML = pc;
-            pcbRow.cells.item(3).innerHTML = ir;
-            pcbRow.cells.item(4).innerHTML = acc;
-            pcbRow.cells.item(5).innerHTML = x;
-            pcbRow.cells.item(6).innerHTML = y;
-            pcbRow.cells.item(7).innerHTML = z;
+            pcbRow.cells.item(1).innerHTML = state;
+            pcbRow.cells.item(2).innerHTML = _CPU.PC.toString();
+            pcbRow.cells.item(3).innerHTML = _CPU.IR.toString();
+            pcbRow.cells.item(4).innerHTML = _CPU.Acc.toString();
+            pcbRow.cells.item(5).innerHTML = _CPU.Xreg.toString();
+            pcbRow.cells.item(6).innerHTML = _CPU.Yreg.toString();
+            pcbRow.cells.item(7).innerHTML = _CPU.Zflag.toString();
         }
         //remove the pid that finish running
         public static clearPcbTable(pid): void {

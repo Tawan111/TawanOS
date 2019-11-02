@@ -6,7 +6,7 @@ var TSOS;
 (function (TSOS) {
     class MemoryAccessor {
         constructor() {
-            //three partitions for next project
+            //three partitions
             this.partition0 = false;
             this.partition1 = false;
             this.partition2 = false;

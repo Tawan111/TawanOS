@@ -18,9 +18,8 @@ var TSOS;
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
-            _NewProcess = new TSOS.Queue(); //new process that is loaded
-            _ReadyProcess = new TSOS.Queue(); //process that will run
-            _RunningProcess = new TSOS.Queue(); //processes that are running
+            _NewProcess = new TSOS.Queue(); //new processes that are loaded
+            _RunningProcess = new TSOS.Queue(); //processes that will run
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
@@ -77,7 +76,16 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
+                //check the scheduler
+                _CpuScheduler.scheduler();
                 _CPU.cycle();
+                //update the cpu display
+                TSOS.Control.cpuDisplay();
+                //check if the program is complete
+                if (_CPU.IR !== "00") {
+                    //update the pcb display if the program still have to run
+                    TSOS.Control.updatePcbTable(_programPid, "Running");
+                }
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -112,11 +120,14 @@ var TSOS;
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
-                case INVALID_IRQ:
+                case INVALID_IRQ: //program error
                     this.UpiInvalid(params);
                     break;
-                case OUTPUT_IRQ:
+                case OUTPUT_IRQ: //program result
                     this.output(params);
+                    break;
+                case CS_IRQ: //context switch
+                    this.contextSwitch();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -186,12 +197,16 @@ var TSOS;
             //return the new pid
             return _PID;
         }
-        //comeplete the process and free memory
-        completeProc() {
-            var program = _RunningProcess.dequeue();
-            _MemoryManager.freeMem(program.pcb);
-            //remove the finish program from the PCB display 
-            TSOS.Control.clearPcbTable(program.pid);
+        //comeplete the program and free memory
+        completeProg() {
+            //free memory base on the program location in memory
+            _MemoryManager.freeMem(_programLocation);
+            //clear the program from pcb display
+            TSOS.Control.clearPcbTable(_programPid);
+            //the program cycle is = to the set quantum
+            _CpuScheduler.programCycle = quantum;
+            //checks the scheduler to initialize the next program
+            _CpuScheduler.scheduler();
         }
         //invalid op code detected
         UpiInvalid(opCode) {
@@ -204,22 +219,85 @@ var TSOS;
             _StdOut.putText(chr);
         }
         //run a program
-        runProc(pid) {
-            var program = _NewProcess.dequeue();
-            var select = false;
-            while (program.pid != pid) {
-                _NewProcess.enqueue(program);
+        runProg(pid) {
+            var program;
+            var order = false;
+            //pid condition
+            var checkPid = false;
+            //search for the pid
+            for (var i = 0; i < _NewProcess.getSize(); i++) {
                 program = _NewProcess.dequeue();
-                select = !select;
+                //if the pid match
+                if (program.pid == pid) {
+                    //condition is set to true
+                    checkPid = true;
+                    break;
+                }
+                _NewProcess.enqueue(program);
+                //changing the order of the programs in queue
+                order = !order;
             }
-            if (select) {
-                _NewProcess.enqueue(_NewProcess.dequeue());
+            //run the program if it is found
+            if (checkPid) {
+                if (order) {
+                    _NewProcess.enqueue(_NewProcess.dequeue());
+                }
+                //change the program state to waiting
+                program.state = "Waiting";
+                _RunningProcess.enqueue(program);
+                //scheduler is running
+                _CpuScheduler.run();
+                //cpu is running
+                _CPU.isExecuting = true;
             }
-            //change the program state to ready
-            program.state = "Ready";
-            _ReadyProcess.enqueue(program);
-            //CPU will start
+            else {
+                //if the pid is not found
+                _StdOut.putText("PID: " + pid + " does not exist");
+                _StdOut.advanceLine();
+            }
+        }
+        //run all proceses
+        runAllProg() {
+            //while there are more than 0 program in the resident list
+            while (_NewProcess.getSize() > 0) {
+                //all programs are in running queue
+                _RunningProcess.enqueue(_NewProcess.dequeue());
+            }
+            //scheduler is running
+            _CpuScheduler.run();
+            //cpu is running
             _CPU.isExecuting = true;
+        }
+        //switch between programs
+        contextSwitch() {
+            //if the current program is not complete, it will be saved 
+            if (_CPU.IR != "00") {
+                var runningProgram = new TSOS.Pcb(_programLocation, _programPid);
+                //chnage the program state from running to waiting
+                runningProgram.state = "Waiting";
+                runningProgram.pc = _CPU.PC;
+                runningProgram.acc = _CPU.Acc;
+                runningProgram.x = _CPU.Xreg;
+                runningProgram.y = _CPU.Yreg;
+                runningProgram.z = _CPU.Zflag;
+                runningProgram.base = _programLocation;
+                _RunningProcess.enqueue(runningProgram);
+                //update to the pcb display
+                TSOS.Control.updatePcbTable(_programPid, runningProgram.state);
+            }
+            //program in queue is loaded
+            var queueProgram = _RunningProcess.dequeue();
+            //change the program state from waiting to running
+            queueProgram.state = "Running";
+            _CPU.PC = queueProgram.pc;
+            _CPU.Acc = queueProgram.acc;
+            _CPU.Xreg = queueProgram.x;
+            _CPU.Yreg = queueProgram.y;
+            _CPU.Zflag = queueProgram.z;
+            _programPid = queueProgram.pid;
+            _programLocation = queueProgram.pcb;
+            //update to the pcb display
+            TSOS.Control.updatePcbTable(_programPid, queueProgram.state);
         }
     }
     TSOS.Kernel = Kernel;

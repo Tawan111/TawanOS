@@ -19,8 +19,9 @@ const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 100
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
-var INVALID_IRQ = 2;
-var OUTPUT_IRQ = 3;
+var INVALID_IRQ = 2; //program error
+var OUTPUT_IRQ = 3; //program result
+const CS_IRQ = 4; //context switch
 
 
 
@@ -58,8 +59,10 @@ var _KernelInputQueue: TSOS.Queue = null;
 var _KernelBuffers = null; 
 var _PID = -1; //pid will start at 0 
 var _NewProcess; //resident list
-var _ReadyProcess;
-var _RunningProcess; //running processes
+var _RunningProcess; //running list
+var _programPid: any = 0; //running program pid
+var _programLocation = 0; //location of program in memory
+var quantum = 6; //default quantum is 6
 
 // Standard input and output
 var _StdIn:  TSOS.Console = null; 
