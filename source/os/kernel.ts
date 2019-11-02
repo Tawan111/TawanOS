@@ -294,10 +294,15 @@
                     var runningProgram = new Pcb(_programLocation, _programPid);
                     //chnage the program state from running to waiting
                     runningProgram.state = "Waiting";
+                    //save pc to cpu
                     runningProgram.pc = _CPU.PC;
+                    //save acc to cpu
                     runningProgram.acc = _CPU.Acc;
+                    //save xreg to cpu
                     runningProgram.x = _CPU.Xreg;
+                    //save yreg to cpu
                     runningProgram.y = _CPU.Yreg;
+                    //save zflag to cpu
                     runningProgram.z = _CPU.Zflag;
                     runningProgram.base = _programLocation
                     _RunningProcess.enqueue(runningProgram);
@@ -308,10 +313,15 @@
                 var queueProgram = _RunningProcess.dequeue();
                 //change the program state from waiting to running
                 queueProgram.state = "Running";
+                //updating pc
                 _CPU.PC = queueProgram.pc;
+                //updating acc
                 _CPU.Acc = queueProgram.acc;
+                //updating xreg
                 _CPU.Xreg = queueProgram.x;
+                //updating yreg
                 _CPU.Yreg = queueProgram.y;
+                //updating zflag
                 _CPU.Zflag = queueProgram.z;
                 _programPid = queueProgram.pid;
                 _programLocation = queueProgram.pcb;

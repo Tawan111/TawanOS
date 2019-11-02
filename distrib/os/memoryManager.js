@@ -6,6 +6,7 @@ var TSOS;
 (function (TSOS) {
     class MemoryManager {
         constructor() {
+            //memory base location
             this.memory = 0;
         }
         checkPartition(uPI) {
@@ -19,18 +20,21 @@ var TSOS;
                     else {
                         //partition 2 is taken
                         _Memory.partition2 = true;
+                        //memory base location is 512
                         this.memory = 512;
                     }
                 }
                 else {
                     //partition 1 is taken
                     _Memory.partition1 = true;
+                    //memory base location is 256
                     this.memory = 256;
                 }
             }
             else {
                 //partition 0 is taken
                 _Memory.partition0 = true;
+                //memory base location is 0
                 this.memory = 0;
             }
             //if memory is not full
@@ -77,29 +81,14 @@ var TSOS;
         clearMem() {
             //set all partitions to false to free up the memory
             this.freeMem(0);
+            //free partition 0
             _Memory.partition0 = false;
             this.freeMem(256);
+            //free partition 1
             _Memory.partition1 = false;
             this.freeMem(512);
+            //free partition 2
             _Memory.partition2 = false;
-        }
-        //TODO base and limit 
-        baseLimit(base) {
-            if (this.memory == 0) {
-                this.base = 0;
-                this.limit = "FF";
-                return this.base;
-            }
-            if (this.memory == 256) {
-                this.base = 100;
-                this.limit = "1FF";
-                return this.base;
-            }
-            if (this.memory == 512) {
-                this.base = 200;
-                this.limit = "2FF";
-                return this.base;
-            }
         }
     }
     TSOS.MemoryManager = MemoryManager;

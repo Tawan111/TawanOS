@@ -17,6 +17,7 @@ var TSOS;
             this.z = 0;
             this.location = "Memory";
             this.base = 0;
+            this.limit = "0";
             this.pcb = pcb;
             this.pid = pid;
             this.state = "Waiting";

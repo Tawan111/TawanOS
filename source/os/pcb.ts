@@ -8,7 +8,7 @@
 module TSOS {
 
     export class Pcb {
-        //values that will be display are pid, state, pc, ir, acc, x, y, z, and location    
+        //values that will be display are pid, state, pc, ir, acc, x, y, z, location, base, and limit  
         public pid: number;
         public state: string = "Waiting";
         public pc: number = 0;
@@ -19,7 +19,7 @@ module TSOS {
         public z: number = 0; 
         public location: string = "Memory";
         public base: number = 0;
-        public limit: string;
+        public limit: string = "0";
         public pcb: number;
         public max: number;
     

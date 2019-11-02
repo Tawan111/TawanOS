@@ -21,7 +21,7 @@ module TSOS {
             _programPid = program.pid;
             _programLocation = program.pcb;
         }
-
+        //check the scheduler for RR
         public scheduler(): void {
             //the program cycle increments after each cycle
             this.programCycle++;
@@ -32,7 +32,7 @@ module TSOS {
                     _KernelInterruptQueue.enqueue(new Interrupt(CS_IRQ, _programPid));
                 } else {
                     //when there is no other program, check if the current program is complete
-                    if(_CPU.IR == "00"){
+                    if (_CPU.IR == "00"){
                         _CPU.init();
                     }
                 }

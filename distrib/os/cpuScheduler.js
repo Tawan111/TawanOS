@@ -20,6 +20,7 @@ var TSOS;
             _programPid = program.pid;
             _programLocation = program.pcb;
         }
+        //check the scheduler for RR
         scheduler() {
             //the program cycle increments after each cycle
             this.programCycle++;

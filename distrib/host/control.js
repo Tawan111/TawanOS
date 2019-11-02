@@ -106,31 +106,66 @@ var TSOS;
             var pcbRow = document.createElement("tr");
             var pcbCell = document.createElement("td");
             pcbRow.id = pcb.pid;
-            pcbCell.appendChild(document.createTextNode(pcb.pid)); //pid
+            //base and limit
+            var base;
+            var limit;
+            //if partition 0 is taken then base is 0 and limit is FF
+            if (_MemoryManager.memory == 0) {
+                base = 0;
+                limit = "FF";
+                //if partition 1 is taken then base is 100 and limit is 1FF
+            }
+            else if (_MemoryManager.memory == 256) {
+                base = 100;
+                limit = "1FF";
+                //if partition 2 is taken then base is 200 and limit is 2FF
+            }
+            else if (_MemoryManager.memory == 512) {
+                base = 200;
+                limit = "2FF";
+            }
+            //displaying pid
+            pcbCell.appendChild(document.createTextNode(pcb.pid));
             pcbRow.appendChild(pcbCell);
+            //displaying state
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.state)); //state
+            pcbCell.appendChild(document.createTextNode(pcb.state));
             pcbRow.appendChild(pcbCell);
+            //displaying pc
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.pc)); //pc
+            pcbCell.appendChild(document.createTextNode(pcb.pc));
             pcbRow.appendChild(pcbCell);
+            //displayin ir
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode("0")); //ir
+            pcbCell.appendChild(document.createTextNode("0"));
             pcbRow.appendChild(pcbCell);
+            //displaying acc
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.acc)); //acc
+            pcbCell.appendChild(document.createTextNode(pcb.acc));
             pcbRow.appendChild(pcbCell);
+            //displaying xreg
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.x)); //xreg
+            pcbCell.appendChild(document.createTextNode(pcb.x));
             pcbRow.appendChild(pcbCell);
+            //displaying yreg
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.y)); //yreg
+            pcbCell.appendChild(document.createTextNode(pcb.y));
             pcbRow.appendChild(pcbCell);
+            //displaying zflag
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.z)); //zreg
+            pcbCell.appendChild(document.createTextNode(pcb.z));
             pcbRow.appendChild(pcbCell);
+            //displaying lcoation
             pcbCell = document.createElement("td");
-            pcbCell.appendChild(document.createTextNode(pcb.location)); //location
+            pcbCell.appendChild(document.createTextNode(pcb.location));
+            pcbRow.appendChild(pcbCell);
+            //displaying base
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(base));
+            pcbRow.appendChild(pcbCell);
+            //displaying limit
+            pcbCell = document.createElement("td");
+            pcbCell.appendChild(document.createTextNode(limit));
             pcbRow.appendChild(pcbCell);
             pcbTable.appendChild(pcbRow);
         }
@@ -138,12 +173,19 @@ var TSOS;
         static updatePcbTable(pid, state) {
             var pcbTable = document.getElementById("pcbTable");
             var pcbRow = document.getElementById(pid);
+            //update state
             pcbRow.cells.item(1).innerHTML = state;
+            //update pc
             pcbRow.cells.item(2).innerHTML = _CPU.PC.toString();
+            //update ir
             pcbRow.cells.item(3).innerHTML = _CPU.IR.toString();
+            //update acc
             pcbRow.cells.item(4).innerHTML = _CPU.Acc.toString();
+            //update xreg
             pcbRow.cells.item(5).innerHTML = _CPU.Xreg.toString();
+            //update yreg
             pcbRow.cells.item(6).innerHTML = _CPU.Yreg.toString();
+            //update zflag
             pcbRow.cells.item(7).innerHTML = _CPU.Zflag.toString();
         }
         //remove the pid that finish running
@@ -160,7 +202,7 @@ var TSOS;
             var memTb = document.createElement("table");
             memTb.className = "memTb";
             memTb.id = "memTb";
-            //container for user program inputs
+            //display container for user program inputs in memory display
             for (var i = 0; i < 96; i++) {
                 var tableCell = document.createElement("td");
                 var tableRow = document.createElement("tr");
@@ -207,11 +249,17 @@ var TSOS;
         //display for CPU
         static cpuDisplay() {
             var cpuDisplay = document.getElementById("cpu");
+            //updating pc
             cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = _CPU.PC.toString();
+            //update ir
             cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = _CPU.IR.toString();
+            //update acc        	
             cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = _CPU.Acc.toString();
+            //update xreg           	
             cpuDisplay.rows[1].cells.namedItem("x").innerHTML = _CPU.Xreg.toString();
+            //update yreg        	
             cpuDisplay.rows[1].cells.namedItem("y").innerHTML = _CPU.Yreg.toString();
+            //update zflag           	
             cpuDisplay.rows[1].cells.namedItem("z").innerHTML = _CPU.Zflag.toString();
         }
     }
