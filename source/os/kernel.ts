@@ -88,16 +88,16 @@
                     var interrupt = _KernelInterruptQueue.dequeue();
                     this.krnInterruptHandler(interrupt.irq, interrupt.params);
                 } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                    //check the scheduler for RR
-                    _CpuScheduler.scheduler();
                     _CPU.cycle();
                     //update the cpu display
                     Control.cpuDisplay();
                     //check if the program is complete
                     if (_CPU.IR !== "00") {
                         //update the pcb display if the program still have to run
-                        Control.updatePcbTable(_ProgramPid, "Running");
+                        Control.updatePcbTable(_CpuScheduler.program.pid, _CpuScheduler.program.state);
                     }
+                    //check the scheduler for RR
+                    _CpuScheduler.scheduler();
                 } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                     this.krnTrace("Idle");
                 }
@@ -143,7 +143,13 @@
                         this.output(params);
                         break;
                     case CS_IRQ: //context switch will be called by scheduler
-                        this.contextSwitch();
+                        this.contextSwitch(params);
+                        break;
+                    case Bounds_IRQ: //memory out of bounds error
+                        this.memViolation(params); 
+                        break;
+                    case KILL_IRQ: //kill a program
+                        this.kill(params);
                         break;
                     default:
                         this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -213,30 +219,94 @@
                 var program = new Pcb(pid, _PID);
                 _NewProcess.enqueue(program);
                 //add the pid to the waiting pid array
-                _WaitingPID.push(program.pid);
+                _PIDWaiting.push(program.pid);
                 //print pcb table
                 Control.makePcbTable(program);
                 //return the new pid
                 return _PID;
             }
             //comeplete the program and free memory
-            public completeProg(){
+            public completeProg(program){
                 //free memory base on the program location in memory
-                _MemoryManager.freeMem(_ProgramLocation);
+                _MemoryManager.freeMem(_CpuScheduler.program.pcb);
                 //clear the program from pcb display
-                Control.clearPcbTable(_ProgramPid);
+                Control.clearPcbTable(_CpuScheduler.program.pid);
+                //remove the pid from the all pid array
+                _PIDAll.splice(_PIDAll.indexOf(_CpuScheduler.program.pcb.pid), 1);
                 //remove the pid from the running pid array
-                _RunningPID.splice(_RunningPID.indexOf(_ProgramPid), 1);
-                //the program cycle is = to the set quantum
-                _CpuScheduler.programCycle = _Quantum;
-                //checks the scheduler to initialize the next program
-                _CpuScheduler.scheduler();            
+                _PIDRunning.splice(_PIDRunning.indexOf(_CpuScheduler.program.pcb.pid), 1);
+                //check for anymore running program
+                if (_PIDAll.length == 0) {
+                    //call scheduler
+                    _CpuScheduler.scheduler();
+                } else {
+                    //the program cycle is = to the set quantum
+                    _CpuScheduler.programCycle = _Quantum;
+                }         
+            }
+            //kill a program
+            public kill(pid){
+                var program;
+                //pid searched from both waiting and running programs
+                var value = _PIDAll.indexOf(parseInt(pid)) && _PIDWaiting.indexOf(parseInt(pid));
+                //check for pid
+                if (value == -1){
+                    //pid doesnt exist
+                    _StdOut.putText("PID: " + pid + " not found."); 
+                    _StdOut.advanceLine();
+                } else {
+                    //matach input pid with program pid
+                    if (pid == _CpuScheduler.program.pid){
+                        //complete the program
+                        this.completeProg(_CpuScheduler.program);
+                        _CPU.IR = "00";
+                    } else {
+                        //look for memory location for running programs
+                        for (var i = 0; i < _RunningProcess.getSize(); i++){
+                            program = _RunningProcess.dequeue();
+                            if (program.pid == pid){
+                                //memory location
+                                var pcbRunning = program.pcb;
+                                break;
+                            } else {
+                                _RunningProcess.enqueue(program);
+                            }
+                        }
+                        //look for memory location for waiting programs
+                        for (var i = 0; i < _NewProcess.getSize(); i++){
+                            program = _NewProcess.dequeue();
+                            if (program.pid == pid){
+                                //memory location
+                                var pcbWaiting = program.pcb;
+                                break;
+                            } else {
+                                _NewProcess.enqueue(program);
+                            }
+                        }
+                    } 
+                    //update pcb table after removal
+                    Control.clearPcbTable(pid);
+                    //free memory of the running program
+                    _MemoryManager.freeMem(pcbRunning);
+                    //free memory of the waiting program
+                    _MemoryManager.freeMem(pcbWaiting);
+                    //remove the pid from the all pid array
+                    _PIDAll.splice(value, 1);
+                    // move onto next iteration
+                    _CpuScheduler.programCycle = _Quantum;
+                    //call scheduler
+                    _CpuScheduler.scheduler(); 
+                }
             }
             //invalid op code detected
             public UpiInvalid(opCode){
                 _StdOut.putText("Invalid op code: " + opCode);
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
+            }
+            public memViolation(pid){
+                _StdOut.putText("Memory access violoation from program with the PID: " + pid);
+                this.completeProg(_CpuScheduler.program);
             }
             //output on the canvas
             public output(chr){
@@ -268,11 +338,13 @@
                     }
                     //change the program state to waiting
                     program.state = "Waiting";
+                    //add pid to the all pid array
+                    _PIDAll.push(program.pid);
                     _RunningProcess.enqueue(program);
-                    //scheduler is running
+                    //update the pcb table
+                    Control.updatePcbTable(program.pid, program.state);
+                    //call the scheduler to run the program
                     _CpuScheduler.run(); 
-                    //cpu is running
-                    _CPU.isExecuting = true;
                 } else {
                     //if the pid is not found
                     _StdOut.putText("PID: " + pid + " does not exist"); 
@@ -281,20 +353,26 @@
             }
             //run all proceses
             public runAllProg(){
-                //while there are more than 0 program in the resident list
-                while (_NewProcess.getSize() > 0){
-                    _RunningProcess.enqueue(_NewProcess.dequeue());
+                var program;
+                //check if theres program loaded
+                while (!_NewProcess.isEmpty()){
+                    program = _NewProcess.dequeue();
+                    //add pid to the all pid array
+                    _PIDAll.push(program.pid);
+                    //change the state to waiting
+                    program.state = "Waiting";
+                    _RunningProcess.enqueue(program);
+                    //update the pcb table
+                    Control.updatePcbTable(program.pid, program.state);
                 }
-                //scheduler is running
+                //call the scheduler to run the program
                 _CpuScheduler.run();
-                //cpu is running
-                _CPU.isExecuting = true;
             }
             //switch between programs
-            public contextSwitch(){
+            public contextSwitch(program){
                 //if the current program is not complete, it will be saved 
                 if (_CPU.IR != "00"){
-                    var runningProgram = new Pcb(_ProgramLocation, _ProgramPid);
+                    var runningProgram = new Pcb(_CpuScheduler.program.pcb, _CpuScheduler.program.pid);
                     //chnage the program state from running to waiting
                     runningProgram.state = "Waiting";
                     //save pc to cpu
@@ -308,12 +386,12 @@
                     //save zflag to cpu
                     runningProgram.z = _CPU.Zflag;
                     //remove the pid from the running pid array
-                    _RunningPID.splice(_RunningPID.indexOf(_ProgramPid), 1);
+                    _PIDRunning.splice(_PIDRunning.indexOf(runningProgram.pid), 1);
                     //add the pid to the waiting pid array
-                    _WaitingPID.push(runningProgram.pid);
+                    _PIDWaiting.push(runningProgram.pid);
                     _RunningProcess.enqueue(runningProgram);
                     //update to the pcb display
-                    Control.updatePcbTable(_ProgramPid, runningProgram.state);
+                    Control.updatePcbTable(runningProgram.pid, runningProgram.state);
                 }
                 //program in queue is loaded
                 var queueProgram = _RunningProcess.dequeue();
@@ -329,14 +407,13 @@
                 _CPU.Yreg = queueProgram.y;
                 //updating zflag
                 _CPU.Zflag = queueProgram.z;
-                _ProgramPid = queueProgram.pid;
-                _ProgramLocation = queueProgram.pcb;
+                _CpuScheduler.program = queueProgram;
                 //remove the pid from the waiting pid array
-                _WaitingPID.splice(_WaitingPID.indexOf(_ProgramPid), 1);
+                _PIDWaiting.splice(_PIDWaiting.indexOf(queueProgram.pid), 1);
                 //add the pid to the running pid array
-                _RunningPID.push(queueProgram.pid);
-                //update to the pcb display
-                Control.updatePcbTable(_ProgramPid, queueProgram.state);            
+                _PIDRunning.push(queueProgram.pid);
+                //reset the cycle
+                _CpuScheduler.programCycle = 0;            
             }
     }
 }

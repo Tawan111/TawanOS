@@ -52,11 +52,26 @@
             //get memory
             public getMem(arr){
                 //return location value to cpu when fetch
-                return _Memory.memorArr[_ProgramLocation + arr];
+                //check for memory out of bonds error
+                if ((_CpuScheduler.program.pcb + arr) > (_CpuScheduler.program.pcb + 255)){
+                    //kernel interrupt memory access violation
+                    _KernelInterruptQueue.enqueue(new Interrupt(Bounds_IRQ, _CpuScheduler.program.pid));
+                } else{
+                    var value = _Memory.memorArr[_CpuScheduler.program.pcb + arr];
+                    return value;
+                }
             }
             //update memory
             public updateMem(memAddress, d): void { 
-                _Memory.memorArr[parseInt(memAddress, 16) + _ProgramLocation] = d.toString(16);
+                //check for memory out of bonds error
+                if((parseInt(memAddress, 16) + _CpuScheduler.program.pcb) > (_CpuScheduler.program.pcb + 255)){
+                    //kernel interrupt memory access violation
+                    _KernelInterruptQueue.enqueue(new Interrupt(Bounds_IRQ, _CpuScheduler.program.pid));
+                } else {
+                    _Memory.memorArr[parseInt(memAddress, 16) + _CpuScheduler.program.pcb] = d.toString(16);
+                    //update the memory display
+                    Control.updateMemDisplay(_CpuScheduler.program.pcb);
+                }
             }
             //clear the memory display
             public freeMem(memory): void {
@@ -76,7 +91,7 @@
                 //update the memory display to remove the memory from the display 
                 Control.updateMemDisplay(memory);
             }
-            //clear all memory when user input clearmem
+            //clear all memory when user input clearmem or killall
             public clearMem(): void{
                 //set all partitions to false to free up the memory
                 this.freeMem(0);
@@ -90,7 +105,6 @@
                 this.freeMem(512);
                 //free partition 2
                 _Memory.partition2 = false;
-
             }
         }
     }

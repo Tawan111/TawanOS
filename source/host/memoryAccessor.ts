@@ -20,11 +20,11 @@ module TSOS {
         }
         //find and read the partition
         public findPart(part, max) {
-            //TODO
+            
         }
         //will write the partition
         public usePart(part, arr, data){
-            //TODO
+            
            Control.updateMemDisplay(part);
         }
     }

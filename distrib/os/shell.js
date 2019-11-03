@@ -319,14 +319,29 @@ var TSOS;
         }
         //clear all memory
         shellClearmem(args) {
-            //call memory manager to clear all partitions
-            _MemoryManager.clearMem();
+            //Check if cpu is running
+            if (_CPU.isExecuting == false) {
+                //clear memory
+                _MemoryManager.clearMem();
+                //clear pcb display
+                TSOS.Control.clearPcbTable(-1);
+                //gets rid of loaded programs
+                while (!_NewProcess.isEmpty()) {
+                    _NewProcess.dequeue();
+                }
+                //empty the pid array for waiting pids
+                _PIDWaiting = [];
+                //if cpu is currently running
+            }
+            else {
+                _StdOut.putText("A program is running, cannot clear memoery.");
+            }
         }
         //run all programs
         shellRunall(args) {
             //check if there any program loaded
             if (_NewProcess.isEmpty()) {
-                _StdOut.putText("There is no program loaded.");
+                _StdOut.putText("No program is loaded.");
             }
             else {
                 //call kernel to run all programs
@@ -336,21 +351,51 @@ var TSOS;
         //display loaded programs in their current state
         shellPs(args) {
             //check if both waiting and running programs are empty
-            if (_WaitingPID.length == 0 && _RunningPID.length == 0) {
+            if (_PIDWaiting.length == 0 && _PIDRunning.length == 0) {
                 _StdOut.putText("No program loaded");
             }
             else {
                 //print the list of programs that are waiting and running
-                _StdOut.putText("Waiting: " + _WaitingPID.toString());
+                _StdOut.putText("Waiting: " + _PIDWaiting.toString());
                 _StdOut.advanceLine();
-                _StdOut.putText("Running: " + _RunningPID.toString());
+                _StdOut.putText("Running: " + _PIDRunning.toString());
             }
         }
         //kill a program
         shellKill(pid) {
+            //check for an input and if the input is a positive integer using regular expresstion to test
+            if (pid != "" && /^\d*$/.test(pid)) {
+                //kernel interrupt for kill
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(KILL_IRQ, pid));
+            }
+            else {
+                _StdOut.putText("Must input a PID to kill.");
+            }
         }
         //kill all programs
         shellKillall(args) {
+            //clear memory
+            _MemoryManager.clearMem();
+            //clear pcb display
+            TSOS.Control.clearPcbTable(-1);
+            //gets rid of loaded programs
+            while (!_NewProcess.isEmpty()) {
+                _NewProcess.dequeue();
+            }
+            //gets rid of running programs
+            while (!_RunningProcess.isEmpty()) {
+                _RunningProcess.dequeue();
+            }
+            //stop cpu
+            _CPU.isExecuting = false;
+            //reset cpu
+            _CPU.init();
+            //empty the pid array for all pids
+            _PIDAll = [];
+            //empty the pid array for waiting pids
+            _PIDWaiting = [];
+            //empty the pid array for running pids
+            _PIDRunning = [];
         }
         //set quantum for RR
         shellQuantum(args) {

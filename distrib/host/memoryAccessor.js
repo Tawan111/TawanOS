@@ -20,11 +20,9 @@ var TSOS;
         }
         //find and read the partition
         findPart(part, max) {
-            //TODO
         }
         //will write the partition
         usePart(part, arr, data) {
-            //TODO
             TSOS.Control.updateMemDisplay(part);
         }
     }

@@ -51,11 +51,28 @@ var TSOS;
         //get memory
         getMem(arr) {
             //return location value to cpu when fetch
-            return _Memory.memorArr[_ProgramLocation + arr];
+            //check for memory out of bonds error
+            if ((_CpuScheduler.program.pcb + arr) > (_CpuScheduler.program.pcb + 255)) {
+                //kernel interrupt memory access violation
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(Bounds_IRQ, _CpuScheduler.program.pid));
+            }
+            else {
+                var value = _Memory.memorArr[_CpuScheduler.program.pcb + arr];
+                return value;
+            }
         }
         //update memory
         updateMem(memAddress, d) {
-            _Memory.memorArr[parseInt(memAddress, 16) + _ProgramLocation] = d.toString(16);
+            //check for memory out of bonds error
+            if ((parseInt(memAddress, 16) + _CpuScheduler.program.pcb) > (_CpuScheduler.program.pcb + 255)) {
+                //kernel interrupt memory access violation
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(Bounds_IRQ, _CpuScheduler.program.pid));
+            }
+            else {
+                _Memory.memorArr[parseInt(memAddress, 16) + _CpuScheduler.program.pcb] = d.toString(16);
+                //update the memory display
+                TSOS.Control.updateMemDisplay(_CpuScheduler.program.pcb);
+            }
         }
         //clear the memory display
         freeMem(memory) {
@@ -77,7 +94,7 @@ var TSOS;
             //update the memory display to remove the memory from the display 
             TSOS.Control.updateMemDisplay(memory);
         }
-        //clear all memory when user input clearmem
+        //clear all memory when user input clearmem or killall
         clearMem() {
             //set all partitions to false to free up the memory
             this.freeMem(0);

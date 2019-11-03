@@ -9,41 +9,42 @@ module TSOS {
         
         //number of cycle for a program
         public programCycle = 0;
+        public program;
 
         public run(): void {
             //running the first program
+            //cycle is set to 0 at the start
             this.programCycle = 0;
-            var program = _RunningProcess.dequeue();
+            this.program = _RunningProcess.dequeue();
             //the state is changed to running
-            program.state = "Running";
+            this.program.state = "Running";
+            //cpu is running
+            _CPU.isExecuting = true;
             //update the PCB table
-            Control.updatePcbTable(program.pid, program.state);
-            _ProgramPid = program.pid;
-            _ProgramLocation = program.pcb;
+            Control.updatePcbTable(this.program.pid, this.program.state);
             //remove the pid from the waiting pid array
-            _WaitingPID.splice(_WaitingPID.indexOf(_ProgramPid), 1);
+            _PIDWaiting.splice(_PIDWaiting.indexOf(this.program.pid), 1);
             //add the pid to the running pid array
-            _RunningPID.push(program.pid);
+            _PIDRunning.push(this.program.pid);
         }
         //check the scheduler for RR
         public scheduler(): void {
-            //the program cycle increments after each cycle
-            this.programCycle++;
-            //checks when the program cycle exceeds the quantum
-            if (this.programCycle > _Quantum){
-                //initialize context switch if there is another program in the queue
-                if (!_RunningProcess.isEmpty()){
-                    //call context switch
-                    _KernelInterruptQueue.enqueue(new Interrupt(CS_IRQ, _ProgramPid));
-                } else {
-                    //when there is no other program, check if the current program is complete
-                    if (_CPU.IR == "00"){
-                        _CPU.init();
+            //if theres no more program running
+            if (_PIDAll.length == 0) {
+                //cpu is reset
+                _CPU.init();
+            } else {
+                //the program cycle increments after each cycle
+                this.programCycle++;
+                //checks when the program cycle exceeds the quantum
+                if (this.programCycle >= _Quantum){
+                    //initialize context switch if there is another program in the queue
+                    if (!_RunningProcess.isEmpty()){
+                        //call context switch
+                        _KernelInterruptQueue.enqueue(new Interrupt(CS_IRQ, this.program));
                     }
                 }
-                //when there is only one program, the program will continue to run, but when there are multiple programs, the cycle is reset in order to run the next program in queue
-                this.programCycle = 0;
             }
-        }                
+        }
     }
 }

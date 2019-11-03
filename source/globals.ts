@@ -22,6 +22,8 @@ const KEYBOARD_IRQ: number = 1;
 var INVALID_IRQ = 2; //program error
 var OUTPUT_IRQ = 3; //program result
 const CS_IRQ = 4; //context switch
+const Bounds_IRQ = 5; //out of bounds error
+const KILL_IRQ = 6; //kill a program
 
 
 
@@ -60,11 +62,10 @@ var _KernelBuffers = null;
 var _PID = -1; //pid will start at 0 
 var _NewProcess; //resident list
 var _RunningProcess; //running list
-var _ProgramPid: any = 0; //running program pid
-var _ProgramLocation = 0; //location of program in memory
 var _Quantum = 6; //default quantum is 6
-var _WaitingPID = []; //contains pids of waiting programs
-var _RunningPID = []; //contains pids of running programs
+var _PIDWaiting = []; //contains pids of waiting programs
+var _PIDRunning = []; //contains pids of running programs
+var _PIDAll = []; //contains all pids
 
 // Standard input and output
 var _StdIn:  TSOS.Console = null; 

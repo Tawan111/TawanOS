@@ -171,29 +171,42 @@ var TSOS;
         }
         //updates the pcb table
         static updatePcbTable(pid, state) {
+            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();
             var pcbTable = document.getElementById("pcbTable");
             var pcbRow = document.getElementById(pid);
+            if (pCounter.length == 1) {
+                pCounter = "0" + pCounter;
+            }
             //update state
             pcbRow.cells.item(1).innerHTML = state;
             //update pc
-            pcbRow.cells.item(2).innerHTML = _CPU.PC.toString();
+            pcbRow.cells.item(2).innerHTML = pCounter;
             //update ir
-            pcbRow.cells.item(3).innerHTML = _CPU.IR.toString();
+            pcbRow.cells.item(3).innerHTML = _CPU.IR;
             //update acc
-            pcbRow.cells.item(4).innerHTML = _CPU.Acc.toString();
+            pcbRow.cells.item(4).innerHTML = _CPU.Acc.toString(16);
             //update xreg
-            pcbRow.cells.item(5).innerHTML = _CPU.Xreg.toString();
+            pcbRow.cells.item(5).innerHTML = _CPU.Xreg.toString(16);
             //update yreg
-            pcbRow.cells.item(6).innerHTML = _CPU.Yreg.toString();
+            pcbRow.cells.item(6).innerHTML = _CPU.Yreg.toString(16).toUpperCase();
             //update zflag
-            pcbRow.cells.item(7).innerHTML = _CPU.Zflag.toString();
+            pcbRow.cells.item(7).innerHTML = _CPU.Zflag.toString(16);
         }
         //remove the pid that finish running
         static clearPcbTable(pid) {
             var pcbTable = document.getElementById("pcbTable");
-            var pcbRow = document.getElementById(pid);
-            //remove the pid row
-            pcbRow.parentNode.removeChild(pcbRow);
+            //clear the entire table if pid is less than 0 (called from killall and clearmem)
+            if (pid < 0) {
+                //clear everything form the pcb table
+                while (pcbTable.hasChildNodes()) {
+                    pcbTable.removeChild(pcbTable.firstChild);
+                }
+            }
+            else {
+                var pcbRow = document.getElementById(pid);
+                //remove the pid row
+                pcbRow.parentNode.removeChild(pcbRow);
+            }
         }
         //create a table for memory
         static memDisplay() {
@@ -248,19 +261,23 @@ var TSOS;
         }
         //display for CPU
         static cpuDisplay() {
+            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();
             var cpuDisplay = document.getElementById("cpu");
+            if (pCounter.length == 1) {
+                pCounter = "0" + pCounter;
+            }
             //updating pc
-            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = _CPU.PC.toString();
+            cpuDisplay.rows[1].cells.namedItem("pc").innerHTML = pCounter;
             //update ir
-            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = _CPU.IR.toString();
+            cpuDisplay.rows[1].cells.namedItem("ir").innerHTML = _CPU.IR;
             //update acc        	
-            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = _CPU.Acc.toString();
+            cpuDisplay.rows[1].cells.namedItem("acc").innerHTML = _CPU.Acc.toString(16);
             //update xreg           	
-            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = _CPU.Xreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("x").innerHTML = _CPU.Xreg.toString(16);
             //update yreg        	
-            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = _CPU.Yreg.toString();
+            cpuDisplay.rows[1].cells.namedItem("y").innerHTML = _CPU.Yreg.toString(16).toUpperCase();
             //update zflag           	
-            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = _CPU.Zflag.toString();
+            cpuDisplay.rows[1].cells.namedItem("z").innerHTML = _CPU.Zflag.toString(16);
         }
     }
     TSOS.Control = Control;

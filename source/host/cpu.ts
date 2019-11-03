@@ -43,8 +43,9 @@ module TSOS {
             //retrieve code from memory
             var memoryOutput = this.retrieve(this.PC);
             this.IR = memoryOutput;
+            //run the opCode
             this.executeProg(this.IR);   
- 
+
         }
         //will fetch from memory manager
         public retrieve(ProgC) {
@@ -98,8 +99,11 @@ module TSOS {
                         this.systemCall();
                         break;
                     default:
+                        //interrupt for invalid opCode
                         _KernelInterruptQueue.enqueue(new Interrupt(INVALID_IRQ, opCode));
-                        _Kernel.completeProg();
+                        //call kernel to finish the program
+                        _Kernel.completeProg(_CpuScheduler.program);
+                        //reset the cpu
                         this.init();
                         break;
                 }
@@ -178,7 +182,7 @@ module TSOS {
         //break
         public break() {
             //call kernel to complete program
-            _Kernel.completeProg();
+            _Kernel.completeProg(_CpuScheduler.program);
 
         }
         //compare memory to X
