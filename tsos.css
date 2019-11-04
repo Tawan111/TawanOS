@@ -48,14 +48,14 @@ h3 {
 }
 
 .memoryDisplay {
-  height: 180px;
+  height: 145px;
   width: 280px;
   overflow-y: scroll;
   background-color: white;
 }
 
 #pcbDisplay {
-  height: 150px;
+  height: 100px;
   width: 430px;  
   background-color: white;  
 }
