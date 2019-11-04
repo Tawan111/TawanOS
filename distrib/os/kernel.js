@@ -289,8 +289,10 @@ var TSOS;
             _StdOut.advanceLine();
             _OsShell.putPrompt();
         }
+        //print out memory viloation error when detected manager
         memViolation(pid) {
-            _StdOut.putText("Memory access violoation from program with the PID: " + pid);
+            _StdOut.putText("Memory access violation from PID: " + pid);
+            //complete the program
             this.completeProg(_CpuScheduler.program);
         }
         //output on the canvas

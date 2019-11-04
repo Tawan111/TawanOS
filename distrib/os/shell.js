@@ -294,7 +294,7 @@ var TSOS;
                         _StdOut.putText("Successfully Loaded Process id: " + pid);
                     }
                     else {
-                        _StdOut.putText("No more memory.");
+                        _StdOut.putText("Not enough memory.");
                     }
                 }
             }
@@ -305,7 +305,7 @@ var TSOS;
             if (pid != "") {
                 //check if there's any program loaded
                 if (_NewProcess.isEmpty()) {
-                    _StdOut.putText("There is no program loaded.");
+                    _StdOut.putText("No program is loaded.");
                 }
                 else {
                     //call kernel to run a program
@@ -334,7 +334,7 @@ var TSOS;
                 //if cpu is currently running
             }
             else {
-                _StdOut.putText("A program is running, cannot clear memoery.");
+                _StdOut.putText("CPU is running, memory cannot be cleared.");
             }
         }
         //run all programs
@@ -352,7 +352,7 @@ var TSOS;
         shellPs(args) {
             //check if both waiting and running programs are empty
             if (_PIDWaiting.length == 0 && _PIDRunning.length == 0) {
-                _StdOut.putText("No program loaded");
+                _StdOut.putText("No program is loaded.");
             }
             else {
                 //print the list of programs that are waiting and running
@@ -369,7 +369,7 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(KILL_IRQ, pid));
             }
             else {
-                _StdOut.putText("Must input a PID to kill.");
+                _StdOut.putText("Must input a PID.");
             }
         }
         //kill all programs
