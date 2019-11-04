@@ -345,8 +345,14 @@
                     _RunningProcess.enqueue(program);
                     //update the pcb table
                     Control.updatePcbTable(program.pid, program.state);
-                    //call the scheduler to run the program
-                    _CpuScheduler.run(); 
+                    //if cpu is already running, check the cpu scheduler and set program cycle to equal to quantum
+                    if(_CPU.isExecuting == true) {
+                        _CpuScheduler.scheduler();
+                        _CpuScheduler.programCycle = _Quantum; 
+                    } else {
+                        //call the scheduler to run the program
+                        _CpuScheduler.run();
+                    }
                 } else {
                     //if the pid is not found
                     _StdOut.putText("PID: " + pid + " does not exist"); 

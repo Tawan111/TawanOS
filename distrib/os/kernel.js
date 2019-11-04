@@ -331,7 +331,13 @@ var TSOS;
                 //update the pcb table
                 TSOS.Control.updatePcbTable(program.pid, program.state);
                 //call the scheduler to run the program
-                _CpuScheduler.run();
+                if (_CPU.isExecuting == true) {
+                    _CpuScheduler.scheduler();
+                    _CpuScheduler.programCycle = _Quantum;
+                }
+                else {
+                    _CpuScheduler.run();
+                }
             }
             else {
                 //if the pid is not found
