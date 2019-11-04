@@ -330,12 +330,13 @@ var TSOS;
                 _RunningProcess.enqueue(program);
                 //update the pcb table
                 TSOS.Control.updatePcbTable(program.pid, program.state);
-                //call the scheduler to run the program
+                //if cpu is already running, check the cpu scheduler and set program cycle to equal to quantum
                 if (_CPU.isExecuting == true) {
                     _CpuScheduler.scheduler();
                     _CpuScheduler.programCycle = _Quantum;
                 }
                 else {
+                    //call the scheduler to run the program
                     _CpuScheduler.run();
                 }
             }
@@ -353,8 +354,8 @@ var TSOS;
                 program = _NewProcess.dequeue();
                 //add pid to the all pid array
                 _PIDAll.push(program.pid);
-                //change the state to waiting
-                program.state = "Waiting";
+                //change the state to new
+                program.state = "New";
                 _RunningProcess.enqueue(program);
                 //update the pcb table
                 TSOS.Control.updatePcbTable(program.pid, program.state);

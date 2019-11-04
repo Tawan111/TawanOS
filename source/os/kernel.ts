@@ -367,8 +367,8 @@
                     program = _NewProcess.dequeue();
                     //add pid to the all pid array
                     _PIDAll.push(program.pid);
-                    //change the state to waiting
-                    program.state = "Waiting";
+                    //change the state to new
+                    program.state = "New";
                     _RunningProcess.enqueue(program);
                     //update the pcb table
                     Control.updatePcbTable(program.pid, program.state);

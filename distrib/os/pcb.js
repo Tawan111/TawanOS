@@ -8,7 +8,7 @@ var TSOS;
 (function (TSOS) {
     class Pcb {
         constructor(pcb, pid) {
-            this.state = "Waiting";
+            this.state = "New";
             this.pc = 0;
             this.ir = "00";
             this.acc = 0;
@@ -20,7 +20,7 @@ var TSOS;
             this.limit = "0";
             this.pcb = pcb;
             this.pid = pid;
-            this.state = "Waiting";
+            this.state = "New";
             this.max = 255;
         }
     }
