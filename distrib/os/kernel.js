@@ -228,8 +228,8 @@ var TSOS;
         //kill a program
         kill(pid) {
             var program;
-            //pid searched from both waiting and running programs
-            var value = _PIDAll.indexOf(parseInt(pid)) && _PIDWaiting.indexOf(parseInt(pid));
+            //pid searched from running programs
+            var value = _PIDAll.indexOf(parseInt(pid));
             //check for pid
             if (value == -1) {
                 //pid doesnt exist
@@ -241,7 +241,6 @@ var TSOS;
                 if (pid == _CpuScheduler.program.pid) {
                     //complete the program
                     this.completeProg(_CpuScheduler.program);
-                    _CPU.IR = "00";
                 }
                 else {
                     //look for memory location for running programs
@@ -249,36 +248,20 @@ var TSOS;
                         program = _RunningProcess.dequeue();
                         if (program.pid == pid) {
                             //memory location
-                            var pcbRunning = program.pcb;
+                            var pcb = program.pcb;
                             break;
                         }
                         else {
                             _RunningProcess.enqueue(program);
                         }
                     }
-                    //look for memory location for waiting programs
-                    for (var i = 0; i < _NewProcess.getSize(); i++) {
-                        program = _NewProcess.dequeue();
-                        if (program.pid == pid) {
-                            //memory location
-                            var pcbWaiting = program.pcb;
-                            break;
-                        }
-                        else {
-                            _NewProcess.enqueue(program);
-                        }
-                    }
                 }
                 //update pcb table after removal
                 TSOS.Control.clearPcbTable(pid);
                 //free memory of the running program
-                _MemoryManager.freeMem(pcbRunning);
-                //free memory of the waiting program
-                _MemoryManager.freeMem(pcbWaiting);
+                _MemoryManager.freeMem(pcb);
                 //remove the pid from the all pid array
                 _PIDAll.splice(value, 1);
-                // move onto next iteration
-                _CpuScheduler.programCycle = _Quantum;
                 //call scheduler
                 _CpuScheduler.scheduler();
             }
