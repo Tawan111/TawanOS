@@ -50,7 +50,7 @@ var _PID = -1; //pid will start at 0
 var _NewProcess; //resident list
 var _RunningProcess; //running list
 var _Quantum = 6; //default quantum is 6
-var _PIDWaiting = []; //contains pids of waiting programs
+var _PIDWaiting = []; //contains pids of ready programs
 var _PIDRunning = []; //contains pids of running programs
 var _PIDAll = []; //contains all pids
 // Standard input and output

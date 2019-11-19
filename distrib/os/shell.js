@@ -356,7 +356,7 @@ var TSOS;
             }
             else {
                 //print the list of programs that are waiting and running
-                _StdOut.putText("Waiting: " + _PIDWaiting.toString());
+                _StdOut.putText("Ready: " + _PIDWaiting.toString());
                 _StdOut.advanceLine();
                 _StdOut.putText("Running: " + _PIDRunning.toString());
             }

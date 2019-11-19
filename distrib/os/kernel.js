@@ -307,7 +307,7 @@ var TSOS;
                     _NewProcess.enqueue(_NewProcess.dequeue());
                 }
                 //change the program state to waiting
-                program.state = "Waiting";
+                program.state = "Ready";
                 //add pid to the all pid array
                 _PIDAll.push(program.pid);
                 _RunningProcess.enqueue(program);
@@ -352,7 +352,7 @@ var TSOS;
             if (_CPU.IR != "00") {
                 var runningProgram = new TSOS.Pcb(_CpuScheduler.program.pcb, _CpuScheduler.program.pid);
                 //chnage the program state from running to waiting
-                runningProgram.state = "Waiting";
+                runningProgram.state = "Ready";
                 //save pc to cpu
                 runningProgram.pc = _CPU.PC;
                 //save acc to cpu
