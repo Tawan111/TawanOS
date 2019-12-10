@@ -456,15 +456,77 @@ var TSOS;
         }
         //read
         shellRead(args) {
+            var name;
+            //test RegExp
+            if (/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.read(name);
+                //print
+                _StdOut.putText(output);
+            }
+            else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
         }
         //write
         shellWrite(args) {
+            var name;
+            var data;
+            //test RegExp
+            if (/^[a-z\d]+$/i.test(args[0])) {
+                name = args[0];
+                //check if file name is input
+                if (args.length < 2) {
+                    _StdOut.putText("Must enter data to write");
+                }
+                else {
+                    data = args[1];
+                    for (var i = 2; i < args.length; i++) {
+                        data = data + " " + args[i];
+                    }
+                    //check if the data is inputed betwen double quote
+                    if (data.charAt(0) != '"' || data.charAt(data.length - 1) != '"') {
+                        _StdOut.putText("data must be in between double quote");
+                    }
+                    else {
+                        data = data.slice(1, data.length - 1);
+                        //call the fsDD
+                        var output = _FileSystemDeviceDriver.write(name, data);
+                        //print
+                        _StdOut.putText(output);
+                    }
+                }
+            }
+            else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
         }
         //delete
         shellDelete(args) {
+            var name;
+            //test RegExp
+            if (/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.delete(name);
+                //print
+                _StdOut.putText(output);
+            }
+            else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
         }
         //format
         shellFormat(args) {
+            //check if CPU is executing
+            if (_CPU.isExecuting == false) {
+                //call the fsDD
+                _FileSystemDeviceDriver.format();
+            }
+            else {
+                _StdOut.putText("Cannot format, CPU is executing");
+            }
         }
         //getschedule
         shellGetschedule(args) {

@@ -614,6 +614,13 @@ module TSOS {
         }
         //format
         public shellFormat(args) {
+              //check if CPU is executing
+              if(_CPU.isExecuting == false) {
+                //call the fsDD
+                _FileSystemDeviceDriver.format();
+            } else {
+                _StdOut.putText("Cannot format, CPU is executing");
+            }
         }
         //getschedule
         public shellGetschedule(args) {

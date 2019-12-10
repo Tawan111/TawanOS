@@ -346,5 +346,13 @@ module TSOS {
             this.diskTSB(tsb, data);
             return this.retrievePointer(data);
         }
+        //format
+        public format() {
+            for (var i=0; i < sessionStorage.length;i++) {
+                //call clearBlock
+                this.clearBlock(sessionStorage.key(i));
+            }
+            _StdOut.putText("Disk Formatted"); 
+        }
     }
 }
