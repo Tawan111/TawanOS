@@ -7,7 +7,7 @@
 var TSOS;
 (function (TSOS) {
     class Pcb {
-        constructor(pcb, pid) {
+        constructor(pcb, pid, priority, tsb) {
             this.state = "New";
             this.pc = 0;
             this.ir = "00";
@@ -18,10 +18,13 @@ var TSOS;
             this.location = "Memory";
             this.base = 0;
             this.limit = "0";
+            this.priority = 0;
             this.pcb = pcb;
             this.pid = pid;
             this.state = "New";
             this.max = 255;
+            this.priority = priority;
+            this.tsb = tsb;
         }
     }
     TSOS.Pcb = Pcb;

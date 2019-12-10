@@ -22,12 +22,16 @@ module TSOS {
         public limit: string = "0";
         public pcb: number;
         public max: number;
+        public priority: number = 0;
+        public tsb: string;
     
-        constructor(pcb, pid) {
+        constructor(pcb, pid, priority, tsb) {
             this.pcb = pcb;
             this.pid = pid;
             this.state = "New";
             this.max = 255;
+            this.priority = priority
+            this.tsb = tsb;
         }
     }
 }

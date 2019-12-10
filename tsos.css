@@ -55,8 +55,9 @@ h3 {
 }
 
 #pcbDisplay {
-  height: 100px;
-  width: 430px;  
+  height: 120px;
+  width: 400px;  
+  overflow-y: scroll;
   background-color: white;  
 }
 
@@ -65,6 +66,20 @@ h3 {
   width: 160px;  
   background-color: white;  
 }
+
+#disk {
+  width: 1200px;
+  height: 120px;
+  overflow-y: scroll;
+  background-color: white;
+}
+
+#disktable{
+  text-align: center;
+  color: black;
+  font-family: monospace;  
+}
+
 
 
 

@@ -157,6 +157,54 @@ module TSOS {
                                 "- let the user set the Round Robin quantum (measured in cpu cycles)");
             this.commandList[this.commandList.length] = sc;
 
+            // format
+            sc = new ShellCommand(this.shellFormat,
+                                "format",
+                                "- Initialize all blocks in all sectors in all tracks");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls
+            sc = new ShellCommand(this.shellLs,
+                                "ls",
+                                "- List the Giles currently stored on the disk");
+            this.commandList[this.commandList.length] = sc;
+
+            // create
+            sc = new ShellCommand(this.shellCreate,
+                                "create",
+                                "<filename> - Create the Gile");
+            this.commandList[this.commandList.length] = sc;
+
+            // read
+            sc = new ShellCommand(this.shellRead,
+                                "read",
+                                "<filename> - Read and display the contents of filename");
+            this.commandList[this.commandList.length] = sc;
+
+            // write
+            sc = new ShellCommand(this.shellWrite,
+                                "write",
+                                "<filename> - Write the data inside the quotes to filename");
+            this.commandList[this.commandList.length] = sc;
+
+            // delete
+            sc = new ShellCommand(this.shellDelete,
+                                "delete",
+                                "<filename> - Remove filename from storage");
+            this.commandList[this.commandList.length] = sc;
+
+            // getschedule
+            sc = new ShellCommand(this.shellGetschedule,
+                                "getschedule",
+                                "- Currently selected CPU scheduling algorithm");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule
+            sc = new ShellCommand(this.shellSetschedule,
+                                "setschedule",
+                                "<schedule> - Select a CPU scheduling algorithm");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -375,12 +423,10 @@ module TSOS {
                     if (memory < 768){
                         //call kernel to create new program
                         var pid = _Kernel.newProg(memory);
-                        _StdOut.putText("Successfully Loaded Process id: " + pid);                 
-                    } else {
-                        _StdOut.putText("Not enough memory.");   
-                    }
-                }
-            } 
+                        _StdOut.putText("Successfully Loaded Process id: " + pid); 
+                    }   
+                }   
+            }   
         }
         //run selected program
         public shellRun(pid) {
@@ -474,7 +520,7 @@ module TSOS {
             //empty the pid array for running pids
             _PIDRunning = [];
         }
-        //set quantum for RR
+        //set quantum 
         public shellQuantum(args) {
             //check for an input and if the input is a positive integer using regular expression to test
             if (args != "" && /^\d*$/.test(args)){
@@ -484,6 +530,47 @@ module TSOS {
             } else {
                 _StdOut.putText("Must input a quantum value.");
             }  
+        }
+        //ls
+        public shellLs(args) {
+            //call the fsDD
+            var names = _FileSystemDeviceDriver.lS();
+            for(var name in names) {
+                //spacing between file names
+                _StdOut.putText(names[name] + " ");
+            }
+        }
+        //create
+        public shellCreate(args) {
+            var name;
+            //test RegExp
+            if(/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.create(name);
+                //print
+                _StdOut.putText(output);
+            } else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
+        }
+        //read
+        public shellRead(args) {
+        }
+        //write
+        public shellWrite(args) {           
+        }
+        //delete
+        public shellDelete(args) {         
+        }
+        //format
+        public shellFormat(args) {
+        }
+        //getschedule
+        public shellGetschedule(args) {
+        }
+        //setschedule
+        public shellSetschedule(args) {
         }
         public shellMan(args: string[]) {
             if (args.length > 0) {
@@ -554,6 +641,30 @@ module TSOS {
                         break;
                     case "quantum":
                         _StdOut.putText("Let the user set the Round Robin quantum (measured in cpu cycles)");
+                        break;
+                    case "format":
+                        _StdOut.putText("Initialize all blocks in all sectors in all tracks");
+                        break;
+                    case "ls":
+                        _StdOut.putText("List the Giles currently stored on the disk");
+                        break;
+                    case "create":
+                        _StdOut.putText("Create the GIle filename");
+                        break;
+                    case "read":
+                        _StdOut.putText("Read and display the contents of filename");
+                        break;
+                    case "write":
+                        _StdOut.putText("Write the data inside the quotes to filename");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Remove filename form storage");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("Currently selected CPU scheduling algorithm");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Select a CPU scheduling algorithm");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
