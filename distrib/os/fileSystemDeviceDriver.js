@@ -350,6 +350,69 @@ var TSOS;
             }
             _StdOut.putText("Disk Formatted");
         }
+        //save the program to disk
+        saveProgram(program) {
+            var data = new Array();
+            var value = this.retrieveTSBValue();
+            //look for empty block
+            if (value != null) {
+                //while program length is greater than 0
+                while (program.length > 0) {
+                    //pop from array
+                    data.push(program.pop());
+                }
+                //if there are empty block, write to disk
+                if (this.diskWrite(value, data)) {
+                    return value;
+                    //program use more than one blcok
+                }
+                else {
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
+        }
+        //look for program in disk
+        getProgram(tsb) {
+            var data = JSON.parse(sessionStorage.getItem(tsb));
+            var program = new Array();
+            var p = this.retrievePointer(data);
+            var opC;
+            var value = 4;
+            //while program takes more than one block
+            while (p != ":1:1:1") {
+                while (value < data.length) {
+                    //retrieve the bytes
+                    opC = data[value];
+                    program.push(opC);
+                    value++;
+                }
+                //clear block
+                data[0] = "0";
+                //update disk
+                this.diskTSB(tsb, data);
+                data = JSON.parse(sessionStorage.getItem(p));
+                p = this.retrievePointer(data);
+                value = 4;
+            }
+            //last block
+            while (value < data.length) {
+                opC = data[value];
+                program.push(opC);
+                value++;
+            }
+            //clear block
+            data[0] = "0";
+            //update block
+            this.diskTSB(tsb, data);
+            //if program length is greater than max
+            if (program.length > 256) {
+                program.splice(256, (program.length - 256));
+            }
+            return program;
+        }
     }
     TSOS.FileSystemDeviceDriver = FileSystemDeviceDriver;
 })(TSOS || (TSOS = {}));

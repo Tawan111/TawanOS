@@ -282,41 +282,42 @@ var TSOS;
         }
         //load program
         shellLoad(args) {
-            var prog = document.getElementById('taProgramInput');
-            //has to be value
-            var userInput = prog.value;
-            //RegExp for matching hex digits
-            var regExpTest = /[a-fA-F0-9]{2}/;
-            var validator = false;
-            //test to see if the user input match RegExp 
-            //also check if the input field is empty
-            if (userInput == "") {
-                _StdOut.putText("User Program Input field is empty.");
-            }
-            else if (userInput.match(regExpTest)) {
-                //validator is true when valid hex digits are detected
-                validator = true;
-            }
-            else {
-                //if the user input field contain non-hex digits
-                _StdOut.putText("Invalid! non-hex digits detected.");
-            }
-            //if hex digits are detected
-            if (validator == true) {
-                var OpCodes = userInput.split(" ");
-                //if memory is above limit
-                if (OpCodes.length == 769) {
-                    _StdOut.putText("Memory is not big enough.");
+            //max/defualt priority is set to 10
+            var p = 10;
+            if (/^\d*$/.test(args[0]) || args[0] == null) {
+                if (args[0] != null) {
+                    p = args[0];
+                }
+                var prog = document.getElementById('taProgramInput');
+                var userInput = prog.value;
+                //test to see if user input matach RegExp
+                if (/^[a-f\d\s]+$/i.test(userInput)) {
+                    var opCodes = userInput.split(" ");
+                    //check partition through mem manager
+                    var memAdd = _MemoryManager.checkPartition(opCodes);
+                    if (memAdd == 769) {
+                        //call kernel to load into disk
+                        var disk = _Kernel.disk(opCodes);
+                        if (disk) {
+                            var pid = _Kernel.newProg(memAdd, p, disk);
+                        }
+                        else {
+                            //disk is full
+                            _StdOut.putText("No more space on disk");
+                        }
+                    }
+                    else {
+                        //call kernel to load new program
+                        var pid = _Kernel.newProg(memAdd, p, null);
+                    }
+                    _StdOut.putText("Successfully Loaded Process id: " + pid);
+                    //check if theres field is empty
+                }
+                else if (userInput == "") {
+                    _StdOut.putText("User Program Input field is empty.");
                 }
                 else {
-                    //val from memory
-                    var memory = _MemoryManager.checkPartition(OpCodes);
-                    //if memory have not reach its limit
-                    if (memory < 768) {
-                        //call kernel to create new program
-                        var pid = _Kernel.newProg(memory);
-                        _StdOut.putText("Successfully Loaded Process id: " + pid);
-                    }
+                    _StdOut.putText("Invalid! non-hex digits detected.");
                 }
             }
         }

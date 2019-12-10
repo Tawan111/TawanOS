@@ -41,6 +41,7 @@ var _MemoryManager: TSOS.MemoryManager;
 var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor;
 var _CpuScheduler: TSOS.CpuScheduler; 
+var _Swapper: TSOS.Swapper; 
 
 var _OSclock: number = 0;  // Page 23.
 
