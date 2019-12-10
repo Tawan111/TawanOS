@@ -176,5 +176,175 @@ module TSOS {
             //update the hard disk display
             Control.updateDiskDisplay(tsb);
         }
+        //read file
+        public read(name): string {
+            var d = new Array<string>();
+            var data = name + " - ";
+            var p;
+            var value;
+            var character;
+            // check if file exist
+            if (this.searchTSBData(name) != null) {
+                d = JSON.parse(sessionStorage.getItem(this.searchTSBData(name)));
+                p = this.retrievePointer(d);
+                value = 4;
+                while(value < this.bSize && d[value] != "00") {
+                    //add letters to the data
+                    character = parseInt(d[value],16);
+                    data += String.fromCharCode(character)
+                    value++;
+                    //when more than one block needs to be read
+                    if(value == this.bSize && p != ":1:1:1") {
+                        d = JSON.parse(sessionStorage.getItem(p));
+                        p = this.retrievePointer(d);
+                        value = 4;
+                    }
+                }
+                return data;
+            } else {
+                //if no file with the input name is found
+                return "File does not exist";
+            }
+        }
+        //pointer
+        public retrievePointer(data): string {
+            //return pointer
+            return data[1] + data[2] + data[3];
+        }
+        //write file
+        public write(name, data): string{
+            //search directory
+            var value = new Array<string>();
+            if(this.searchTSBData(name) != null){
+                value = this.convertString(data);
+                //if file is created
+                if (this.diskWrite(this.searchTSBData(name), value)){
+                    return name + " successfully written";
+                } else {
+                    return "disk is full";
+                }
+            } else {
+                return "File does not exist";
+            }
+        }
+        //string to hex
+        public convertString(string): string[] {
+            //store the string in an array
+            var hex= new Array<string>();
+            for(var i=string.length-1; i >= 0; i--) {
+                hex.push(string.charCodeAt(i).toString(16).toUpperCase());
+            }
+            return hex;
+        }
+        //write to disk
+        public diskWrite(dTSB, data): boolean {
+            var exist = new Array<string>();
+            var d = new Array<string>();
+            d = JSON.parse(sessionStorage.getItem(dTSB));
+            var initial;
+            var index = 0;
+            var p = this.retrievePointer(d);
+            if (p == "000") {
+                index = 4;
+            } else {
+                //while pointer is not taken
+                while(p != ":1:1:1") {
+                    dTSB = p;
+                    exist.push(dTSB);
+                    d = JSON.parse(sessionStorage.getItem(dTSB));      
+                    p = this.retrievePointer(d);                         
+                }
+                //check where the last data finish
+                for(var i=4; i < d.length; i++) {
+                    if(d[i] == "00") {
+                        index = i;
+                        break;
+                    }
+                }
+            }
+            initial = index;
+            while(data.length > 0) {
+                //when one block is not enough
+                if(index == this.bSize){
+                    //retrieve new block
+                    var oldDTSB = dTSB;
+                    dTSB = this.retrieveTSBValue();
+                    exist.push(dTSB);
+                    //clear block
+                    if(dTSB!=null) {
+                        //add pointer
+                        for (var a=1; a < 4; a++) {
+                            d[a] = dTSB.charAt(a-1);
+                        }
+                        //update block
+                        this.diskTSB(oldDTSB, d);
+                        d = JSON.parse(sessionStorage.getItem(dTSB));
+                        index = 4;
+                    } else {
+                        //out of block
+                        for (var tsb in exist) {
+                            //clear block
+                            this.clearBlock(tsb);
+                        }
+                        for (var b=initial; b < this.bSize; b++) {
+                            d = JSON.parse(sessionStorage.getItem(dTSB));
+                            d[b] = "00";
+                            this.diskTSB(dTSB, d);
+                        }
+                        return false;
+                    }
+                } else{
+                    //available space in block
+                    d[index] = data.pop();
+                    index++;
+                }
+            }
+            //save the previous block
+            for (var c=1; c < 4; c++) {
+                //indication for previous block
+                d[c] = ":1"; 
+            }
+            //update disk
+            this.diskTSB(dTSB,d);
+            return true;
+        }
+        //delete file
+        public delete(name): string {
+            var value = new Array<string>();
+            var content = this.searchTSBData(name);
+            var p;
+            //if content exists
+            if (content != null){
+                //directory deletion
+                for(var i=0; i < this.directory; i++) {
+                    value = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
+                    p = this.retrievePointer(value);
+                    //if pointer is equal to content
+                    if(p == content) {
+                        value[0] = "0";
+                        this.diskTSB(sessionStorage.key(i), value);
+                        break;
+                    }
+                }
+                //tsb data deletion
+                p = this.deleteAssist(content);
+                if(p != "000"){
+                    while(p != ":1:1:1") {
+                        content = p;
+                        p = this.deleteAssist(content);
+                    }
+                }
+                return "File Deleted";
+            } else {
+                return "File does not exist";
+            }
+        }
+        //delete
+        public deleteAssist(tsb): string{
+            var data = JSON.parse(sessionStorage.getItem(tsb));
+            data[0]= "0";
+            this.diskTSB(tsb, data);
+            return this.retrievePointer(data);
+        }
     }
 }
