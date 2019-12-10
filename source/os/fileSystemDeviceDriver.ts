@@ -110,12 +110,9 @@ module TSOS {
                             //update the disk
                             this.diskTSB(sessionStorage.key(i),data);
                             return name + " successfully created";
-                        } else {
-                            return "Disk is full";
                         }
                     }
                 }
-                return "Directory is full";
             }   
         }
         //search for data
@@ -220,9 +217,7 @@ module TSOS {
                 //if file is created
                 if (this.diskWrite(this.searchTSBData(name), value)){
                     return name + " successfully written";
-                } else {
-                    return "disk is full";
-                }
+                } 
             } else {
                 return "File does not exist";
             }

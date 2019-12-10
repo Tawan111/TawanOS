@@ -8,13 +8,40 @@ var TSOS;
         constructor() {
             //number of cycle for a program
             this.programCycle = 0;
+            //current schedule
             this.schedule = "rr";
         }
         run() {
             //running the first program
-            //cycle is set to 0 at the start
+            //cycle is set to 0
             this.programCycle = 0;
             this.program = _RunningProcess.dequeue();
+            //swap running program in disk with the next program in memory
+            //if the current running program is in disk 
+            if (this.program.pcb == 769) {
+                var disk = _RunningProcess.dequeue();
+                while (disk.pcb == 769) {
+                    _RunningProcess.enqueue(disk);
+                    disk = _RunningProcess.dequeue;
+                }
+                //put the program back in disk
+                if (_Swapper.swapper(this.program.tsb, disk.pcb, disk.max)) {
+                    this.program.pcb = disk.pcb;
+                    this.program.max = disk.max;
+                    disk.tsb = _Swapper.swapper(this.program.tsb, disk.pcb, disk.max);
+                    disk.pcb = 769;
+                    _RunningProcess.enqueue(disk);
+                }
+                else {
+                    //no more disk space and memory
+                    var full = "No more space in memory or disk";
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(INVALID_IRQ, full));
+                    //complete the program
+                    _Kernel.completeProg(_CpuScheduler.program);
+                    //cpu reset
+                    _CPU.init();
+                }
+            }
             //the state is changed to running
             this.program.state = "Running";
             //cpu is running
@@ -45,6 +72,51 @@ var TSOS;
                     }
                 }
             }
+        }
+        //change schedule
+        setSchedule(args) {
+            var schedule = args.toString();
+            switch (schedule) {
+                //round robin
+                case "rr":
+                    this.roundRobin();
+                    break;
+                //first come first serve
+                case "fcfs":
+                    this.firstComeFirstServe();
+                    break;
+                //priority
+                case "priority":
+                    this.priority();
+                    break;
+                //invalid input
+                default:
+                    _Quantum = 6;
+                    this.schedulePrint = "Please input rr, fcfs, or priority";
+                    break;
+            }
+            return this.schedulePrint;
+        }
+        //rr
+        roundRobin() {
+            this.schedule = "RR";
+            //quantum changed to 6
+            _Quantum = 6;
+            this.schedulePrint = "Schedule is now Round Robin";
+        }
+        //fcfs
+        firstComeFirstServe() {
+            this.schedule = "FCFS";
+            //quantum changed to 1000
+            _Quantum = 1000;
+            this.schedulePrint = "Schedule is now First Come First Serve";
+        }
+        //priority
+        priority() {
+            this.schedule = "Priority";
+            //quantum changed to 1000
+            _Quantum = 1000;
+            this.schedulePrint = "Schedule is now Priority";
         }
     }
     TSOS.CpuScheduler = CpuScheduler;

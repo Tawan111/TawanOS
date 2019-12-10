@@ -411,10 +411,7 @@ module TSOS {
                         var disk = _Kernel.disk(opCodes);
                         if (disk) {
                             var pid = _Kernel.newProg(memAdd, p ,disk);
-                        } else {
-                            //disk is full
-                            _StdOut.putText("No more space on disk");
-                        }
+                        } 
                     } else {
                         //call kernel to load new program
                         var pid = _Kernel.newProg(memAdd, p ,null);
@@ -628,6 +625,8 @@ module TSOS {
         }
         //setschedule
         public shellSetschedule(args) {
+            //cpuScheduler
+            _StdOut.putText(_CpuScheduler.setSchedule(args));
         }
         public shellMan(args: string[]) {
             if (args.length > 0) {

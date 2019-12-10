@@ -301,10 +301,6 @@ var TSOS;
                         if (disk) {
                             var pid = _Kernel.newProg(memAdd, p, disk);
                         }
-                        else {
-                            //disk is full
-                            _StdOut.putText("No more space on disk");
-                        }
                     }
                     else {
                         //call kernel to load new program
@@ -535,6 +531,8 @@ var TSOS;
         }
         //setschedule
         shellSetschedule(args) {
+            //cpuScheduler
+            _StdOut.putText(_CpuScheduler.setSchedule(args));
         }
         shellMan(args) {
             if (args.length > 0) {

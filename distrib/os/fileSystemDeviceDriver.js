@@ -99,12 +99,8 @@ var TSOS;
                             this.diskTSB(sessionStorage.key(i), data);
                             return name + " successfully created";
                         }
-                        else {
-                            return "Disk is full";
-                        }
                     }
                 }
-                return "Directory is full";
             }
         }
         //search for data
@@ -210,9 +206,6 @@ var TSOS;
                 //if file is created
                 if (this.diskWrite(this.searchTSBData(name), value)) {
                     return name + " successfully written";
-                }
-                else {
-                    return "disk is full";
                 }
             }
             else {
