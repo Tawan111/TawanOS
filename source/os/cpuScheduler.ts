@@ -21,7 +21,7 @@ module TSOS {
             //cpu is running
             _CPU.isExecuting = true;
             //update the PCB table
-            Control.updatePcbTable(this.program.pid, this.program.state);
+            Control.updatePcbTable(this.program.pid, this.program.state, "Memory");
             //remove the pid from the waiting pid array
             _PIDWaiting.splice(_PIDWaiting.indexOf(this.program.pid), 1);
             //add the pid to the running pid array
