@@ -624,6 +624,7 @@ module TSOS {
         }
         //getschedule
         public shellGetschedule(args) {
+            _StdOut.putText("Scheduling: " + _CpuScheduler.schedule);
         }
         //setschedule
         public shellSetschedule(args) {

@@ -10,6 +10,7 @@ module TSOS {
         //number of cycle for a program
         public programCycle = 0;
         public program;
+        public schedule = "rr"
 
         public run(): void {
             //running the first program

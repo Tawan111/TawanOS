@@ -531,6 +531,7 @@ var TSOS;
         }
         //getschedule
         shellGetschedule(args) {
+            _StdOut.putText("Scheduling: " + _CpuScheduler.schedule);
         }
         //setschedule
         shellSetschedule(args) {

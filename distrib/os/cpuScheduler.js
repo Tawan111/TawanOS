@@ -8,6 +8,7 @@ var TSOS;
         constructor() {
             //number of cycle for a program
             this.programCycle = 0;
+            this.schedule = "rr";
         }
         run() {
             //running the first program
