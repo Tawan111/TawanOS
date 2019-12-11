@@ -106,5 +106,16 @@
                 //free partition 2
                 _Memory.partition2 = false;
             }
+            //Find memory for swapper
+            public findMem(memAdd, max) {
+                var value = _Memory.memorArr.slice(memAdd, (memAdd + max + 1));
+                return value;
+            }
+            //write memory for swapper
+            public writeMem(memAdd, arr, value) {
+                _Memory.memorArr[arr] = value.toString(16).toUpperCase();
+                //update the memory display
+                Control.updateMemDisplay(memAdd);
+            }
         }
     }

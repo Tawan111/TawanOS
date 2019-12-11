@@ -145,9 +145,17 @@ module TSOS {
             } else if(_MemoryManager.memory == 512) {
                 base = 200;
                 limit = "2FF";
+            //if memory is fulled then base is HDD and limit is 100
+            } else if (_MemoryManager.memory == 769) {
+                base = "HDD";
+                limit = 100;
             }
             //displaying pid
             pcbCell.appendChild(document.createTextNode(pcb.pid));
+            pcbRow.appendChild(pcbCell);
+            //displaying priority
+            pcbCell = document.createElement("td");    
+            pcbCell.appendChild(document.createTextNode(pcb.priority));
             pcbRow.appendChild(pcbCell);
             //displaying state
             pcbCell = document.createElement("td");    
@@ -192,27 +200,28 @@ module TSOS {
             pcbTable.appendChild(pcbRow);
         } 
         //updates the pcb table
-        public static updatePcbTable(pid, state): void {
-            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();
-            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");                
+        public static updatePcbTable(pid, state, location): void {
+            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();              
             var pcbRow = <HTMLTableRowElement> document.getElementById(pid);
             if (pCounter.length == 1) {
                 pCounter = "0" + pCounter;
             }
             //update state
-            pcbRow.cells.item(1).innerHTML = state;
+            pcbRow.cells.item(2).innerHTML = state;
             //update pc
-            pcbRow.cells.item(2).innerHTML = pCounter;
+            pcbRow.cells.item(3).innerHTML = pCounter;
             //update ir
-            pcbRow.cells.item(3).innerHTML = _CPU.IR;
+            pcbRow.cells.item(4).innerHTML = _CPU.IR;
             //update acc
-            pcbRow.cells.item(4).innerHTML = _CPU.Acc.toString(16);
+            pcbRow.cells.item(5).innerHTML = _CPU.Acc.toString(16);
             //update xreg
-            pcbRow.cells.item(5).innerHTML = _CPU.Xreg.toString(16);
+            pcbRow.cells.item(6).innerHTML = _CPU.Xreg.toString(16);
             //update yreg
-            pcbRow.cells.item(6).innerHTML = _CPU.Yreg.toString(16).toUpperCase();
+            pcbRow.cells.item(7).innerHTML = _CPU.Yreg.toString(16).toUpperCase();
             //update zflag
-            pcbRow.cells.item(7).innerHTML = _CPU.Zflag.toString(16);
+            pcbRow.cells.item(8).innerHTML = _CPU.Zflag.toString(16);
+            //update location
+            pcbRow.cells.item(9).innerHTML = location;
         }
         //remove the pid that finish running
         public static clearPcbTable(pid): void {
@@ -305,6 +314,65 @@ module TSOS {
             cpuDisplay.rows[1].cells.namedItem("y").innerHTML = _CPU.Yreg.toString(16).toUpperCase(); 
             //update zflag           	
             cpuDisplay.rows[1].cells.namedItem("z").innerHTML = _CPU.Zflag.toString(16);                        	
-        } 
+        }
+        //display the disk
+        public static hardDiskDisplay(): void {
+            var container = <HTMLDivElement> document.getElementById("disk");
+            var tbBody = <HTMLTableSectionElement> document.createElement("tbody");
+            var tb = <HTMLTableElement> document.createElement("table");
+            tb.className = "disktable";
+            tb.id = "disktable";
+            //making cells
+            for (var i = 0; i < sessionStorage.length; i++) {
+                //display rows
+                var tableRow = <HTMLTableRowElement> document.createElement("tr");
+                var tableCell = <HTMLTableCellElement> document.createElement("td");
+                var dataBlock = this.block(sessionStorage.key(i).toString());
+                tableRow.id = sessionStorage.key(i).toString();
+                //tsb 
+                var cellText = document.createTextNode(sessionStorage.key(i).toString().charAt(0) + ":" + sessionStorage.key(i).toString().charAt(1) + ":" + sessionStorage.key(i).toString().charAt(2));
+                tableCell.appendChild(cellText);
+                tableRow.appendChild(tableCell);        
+                //byte
+                tableCell = document.createElement("td");
+                cellText = document.createTextNode(dataBlock.pop());
+                tableCell.appendChild(cellText);
+                tableRow.appendChild(tableCell);  
+                //data pointer
+                tableCell = document.createElement("td");
+                cellText = document.createTextNode(dataBlock.pop());
+                tableCell.appendChild(cellText);
+                tableRow.appendChild(tableCell); 
+                //remaining bytes
+                tableCell = document.createElement("td");
+                cellText = document.createTextNode(dataBlock.pop());
+                tableCell.appendChild(cellText);
+                tableRow.appendChild(tableCell);            
+                tbBody.appendChild(tableRow);
+            }
+            tb.appendChild(tbBody);
+            container.appendChild(tb);
+        }
+        //update the disk table
+        public static updateDiskDisplay(tsb): void {
+            var tb = <HTMLTableElement> document.getElementById("disktable");
+            var index = this.block(tsb);       
+            tb.rows.namedItem(tsb).cells[1].innerHTML = index.pop();             
+            //data pointer
+            tb.rows.namedItem(tsb).cells[2].innerHTML = index.pop(); 
+            //remaining bytes
+            tb.rows.namedItem(tsb).cells[3].innerHTML = index.pop();
+        }
+        //data block
+        public static block(tsb): string[] {
+            var index = new Array<string>();
+            //data bytes
+            index.push(JSON.parse(sessionStorage.getItem(tsb)).splice(4,60).toString().replace(/,/g,""));
+            //data pointer
+            index.push(JSON.parse(sessionStorage.getItem(tsb)).splice(1,3).toString().replace(/,/g,""));
+            //first byte
+            index.push(JSON.parse(sessionStorage.getItem(tsb)).splice(0,1).toString());
+            return index;       
+        }
     }
 }

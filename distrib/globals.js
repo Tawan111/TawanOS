@@ -33,6 +33,7 @@ var _MemoryManager;
 var _Memory;
 var _MemoryAccessor;
 var _CpuScheduler;
+var _Swapper;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -63,11 +64,19 @@ var _OsShell;
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver = null;
+var _FileSystemDeviceDriver;
 var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
+    //New fsDD when a new window is open
+    if (sessionStorage) {
+        if (sessionStorage.length != 0) {
+            //display the disk
+            TSOS.Control.hardDiskDisplay();
+        }
+    }
 };
 //# sourceMappingURL=globals.js.map

@@ -36,6 +36,11 @@
                 _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
                 _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
                 this.krnTrace(_krnKeyboardDriver.status);
+                //file system device driver
+                this.krnTrace("Loading the fsDD");
+                _FileSystemDeviceDriver = new FileSystemDeviceDriver();
+                _FileSystemDeviceDriver.driverEntry();
+                this.krnTrace(_FileSystemDeviceDriver.status);
                 //launching memory manager and cpu scheduler
                 _MemoryManager = new MemoryManager();
                 _CpuScheduler = new CpuScheduler();
@@ -47,6 +52,8 @@
                 // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
                 this.krnTrace("Enabling the interrupts.");
                 this.krnEnableInterrupts();
+                //swapper
+                _Swapper = new Swapper();
     
                 // Launch the shell.
                 this.krnTrace("Creating and Launching the shell.");
@@ -94,7 +101,7 @@
                     //check if the program is complete
                     if (_CPU.IR !== "00") {
                         //update the pcb display if the program still have to run
-                        Control.updatePcbTable(_CpuScheduler.program.pid, _CpuScheduler.program.state);
+                        Control.updatePcbTable(_CpuScheduler.program.pid, _CpuScheduler.program.state, "Memory");
                     }
                     //check the scheduler for RR
                     _CpuScheduler.scheduler();
@@ -212,11 +219,14 @@
                 bsodImage.fillRect(0,0,500,500);
             }
             //new program will be created with a unique pid
-            public newProg(pid) {
+            public newProg(pid, priority, tsb) {
                 //pid incrementally increase
                 _PID++;  
                 //give the program a pid value
-                var program = new Pcb(pid, _PID);
+                var program = new Pcb(pid, _PID, priority, tsb);
+                if(tsb != null) {
+                    program.location = "HDD";
+                }
                 _NewProcess.enqueue(program);
                 //add the pid to the waiting pid array
                 _PIDWaiting.push(program.pid);
@@ -283,8 +293,8 @@
                 }
             }
             //invalid op code detected
-            public UpiInvalid(opCode){
-                _StdOut.putText("Invalid op code: " + opCode);
+            public UpiInvalid(invalid){
+                _StdOut.putText(invalid);
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
             }
@@ -328,7 +338,7 @@
                     _PIDAll.push(program.pid);
                     _RunningProcess.enqueue(program);
                     //update the pcb table
-                    Control.updatePcbTable(program.pid, program.state);
+                    Control.updatePcbTable(program.pid, program.state, program.location);
                     //if cpu is already running, check the cpu scheduler and set program cycle to equal to quantum
                     if(_CPU.isExecuting == true) {
                         _CpuScheduler.scheduler();
@@ -355,16 +365,18 @@
                     program.state = "New";
                     _RunningProcess.enqueue(program);
                     //update the pcb table
-                    Control.updatePcbTable(program.pid, program.state);
+                    Control.updatePcbTable(program.pid, program.state, program.location);
                 }
                 //call the scheduler to run the program
                 _CpuScheduler.run();
             }
             //switch between programs
             public contextSwitch(program){
+                var runningProgram;
+                var queueProgram;
                 //if the current program is not complete, it will be saved 
                 if (_CPU.IR != "00"){
-                    var runningProgram = new Pcb(_CpuScheduler.program.pcb, _CpuScheduler.program.pid);
+                    runningProgram = new Pcb(_CpuScheduler.program.pcb, _CpuScheduler.program.pid, 1, null);
                     //chnage the program state from running to waiting
                     runningProgram.state = "Ready";
                     //save pc to cpu
@@ -383,10 +395,40 @@
                     _PIDWaiting.push(runningProgram.pid);
                     _RunningProcess.enqueue(runningProgram);
                     //update to the pcb display
-                    Control.updatePcbTable(runningProgram.pid, runningProgram.state);
+                    Control.updatePcbTable(runningProgram.pid, runningProgram.state, "Memory");
                 }
                 //program in queue is loaded
-                var queueProgram = _RunningProcess.dequeue();
+                queueProgram = _RunningProcess.dequeue();
+                //if the program is in disk
+                if (queueProgram.pcb == 769) {
+                    //swap with previous program
+                    var tsb = _Swapper.swapper(queueProgram.tsb, _CpuScheduler.program.pcb, _CpuScheduler.program.max);
+                    // if swap was successfull
+                    if (tsb) {
+                        queueProgram.pcb = _CpuScheduler.program.pcb;
+                        if(runningProgram) {
+                            var lasProgram = _RunningProcess.dequeue();
+                            while(lasProgram.pid!=runningProgram.pid){
+                                _RunningProcess.enqueue(lasProgram);
+                                lasProgram = _RunningProcess.dequeue();
+                            }
+                            lasProgram.tsb = tsb;
+                            lasProgram.pcb = 769;
+                            //update the pcb table
+                            Control.updatePcbTable(lasProgram.pid, runningProgram.state, "HDD");
+                            _RunningProcess.enqueue(lasProgram);
+                        } 
+                    } else {
+                        //out of space
+                        var invalid: any = "Memory and disk are full"
+                        //interrupt
+                        _KernelInterruptQueue.enqueue(new Interrupt(INVALID_IRQ, invalid));
+                        //complete program
+                        _Kernel.completeProg(_CpuScheduler.program);
+                        // reset CPU
+                        _CPU.init();
+                    }
+                } 
                 //change the program state from waiting to running
                 queueProgram.state = "Running";
                 //updating pc
@@ -407,5 +449,10 @@
                 //reset the cycle
                 _CpuScheduler.programCycle = 0;            
             }
-    }
+            //when theres no more memory, program is moved to disk
+            public disk(program): string {
+                var print = _FileSystemDeviceDriver.saveProgram(program);
+                return print;
+            }
+        }
 }

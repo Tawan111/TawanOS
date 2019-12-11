@@ -99,8 +99,9 @@ module TSOS {
                         this.systemCall();
                         break;
                     default:
+                        var invalid: any = opCode + " is invalid";
                         //interrupt for invalid opCode
-                        _KernelInterruptQueue.enqueue(new Interrupt(INVALID_IRQ, opCode));
+                        _KernelInterruptQueue.enqueue(new Interrupt(INVALID_IRQ, invalid));
                         //call kernel to finish the program
                         _Kernel.completeProg(_CpuScheduler.program);
                         //reset the cpu

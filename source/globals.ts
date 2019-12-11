@@ -41,6 +41,7 @@ var _MemoryManager: TSOS.MemoryManager;
 var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor;
 var _CpuScheduler: TSOS.CpuScheduler; 
+var _Swapper: TSOS.Swapper; 
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -80,6 +81,7 @@ var _SarcasticMode: boolean = false;
 
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver: TSOS.DeviceDriverKeyboard  = null;
+var _FileSystemDeviceDriver;
 
 var _hardwareClockID: number = null;
 
@@ -89,4 +91,11 @@ var _GLaDOS: any = null; // If the above is linked in, this is the instantiated 
 
 var onDocumentLoad = function() {
     TSOS.Control.hostInit();
+    //New fsDD when a new window is open
+    if(sessionStorage){
+        if(sessionStorage.length != 0) { 
+            //display the disk
+            TSOS.Control.hardDiskDisplay();
+        }
+    } 
 };

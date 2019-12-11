@@ -92,8 +92,9 @@ var TSOS;
                         this.systemCall();
                         break;
                     default:
+                        var invalid = opCode + " is invalid";
                         //interrupt for invalid opCode
-                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(INVALID_IRQ, opCode));
+                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(INVALID_IRQ, invalid));
                         //call kernel to finish the program
                         _Kernel.completeProg(_CpuScheduler.program);
                         //reset the cpu

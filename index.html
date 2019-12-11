@@ -22,6 +22,7 @@
    <script type="text/javascript" src="distrib/os/canvastext.js"></script>
    <script type="text/javascript" src="distrib/os/console.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriver.js"></script>
+   <script type="text/javascript" src="distrib/os/fileSystemDeviceDriver.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
    <script type="text/javascript" src="distrib/os/queue.js"></script>
    <script type="text/javascript" src="distrib/os/shell.js"></script>
@@ -31,10 +32,11 @@
    <script type="text/javascript" src="distrib/os/pcb.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
    <script type="text/javascript" src="distrib/os/cpuScheduler.js"></script>
+   <script type="text/javascript" src="distrib/os/swapper.js"></script>
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip3.js"></script>
+   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip4.js"></script>
    
 </head>
 <body onload="onDocumentLoad()">
@@ -86,7 +88,7 @@
          <br>
          <textarea name="taHostLog"
                    id  ="taHostLog"
-                   rows="23"
+                   rows="13"
                    cols="48"
          ></textarea>
       </label>
@@ -98,13 +100,13 @@
          <br>
          <textarea name="taProgramInput"
                    id  ="taProgramInput"
-                   rows="8"
+                   rows="7"
                    cols="48"
          ></textarea>
       </label>
    </div>
 
-   <div id="divMem" style="margin-left:0px;">
+   <div id="divMem" style="margin-left:520px;">
       <label>
          Memory Display
          <br>
@@ -151,6 +153,7 @@
             <thead>
                <tr>
                <th> PID </th> 
+               <th> Priority </th>
                <th> State </th>                           
                <th> PC </th>
                <th> IR </th>
@@ -167,6 +170,20 @@
       </table>
    </div>
 </label>
+</div>
+   <tfoot>
+      <td>
+      <div id="divFileSystem">
+            <label>
+               Hard Disk Drive Display
+               <br>
+               <div id="disk">
+               </div>
+            </label>
+         </div>
+      </td>
+   </tfoot>
+</table>
 </div>
 
 <p class="footerText" style="clear:both;">

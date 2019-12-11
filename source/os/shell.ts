@@ -157,6 +157,54 @@ module TSOS {
                                 "- let the user set the Round Robin quantum (measured in cpu cycles)");
             this.commandList[this.commandList.length] = sc;
 
+            // format
+            sc = new ShellCommand(this.shellFormat,
+                                "format",
+                                "- Initialize all blocks in all sectors in all tracks");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls
+            sc = new ShellCommand(this.shellLs,
+                                "ls",
+                                "- List the Giles currently stored on the disk");
+            this.commandList[this.commandList.length] = sc;
+
+            // create
+            sc = new ShellCommand(this.shellCreate,
+                                "create",
+                                "<filename> - Create the Gile");
+            this.commandList[this.commandList.length] = sc;
+
+            // read
+            sc = new ShellCommand(this.shellRead,
+                                "read",
+                                "<filename> - Read and display the contents of filename");
+            this.commandList[this.commandList.length] = sc;
+
+            // write
+            sc = new ShellCommand(this.shellWrite,
+                                "write",
+                                "<filename> - Write the data inside the quotes to filename");
+            this.commandList[this.commandList.length] = sc;
+
+            // delete
+            sc = new ShellCommand(this.shellDelete,
+                                "delete",
+                                "<filename> - Remove filename from storage");
+            this.commandList[this.commandList.length] = sc;
+
+            // getschedule
+            sc = new ShellCommand(this.shellGetschedule,
+                                "getschedule",
+                                "- Currently selected CPU scheduling algorithm");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule
+            sc = new ShellCommand(this.shellSetschedule,
+                                "setschedule",
+                                "<schedule> - Select a CPU scheduling algorithm");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -345,42 +393,41 @@ module TSOS {
         }
         //load program
         public shellLoad(args: string[]) {
-            var prog = <HTMLInputElement>document.getElementById('taProgramInput');
-            //has to be value
-            var userInput = prog.value
-            //RegExp for matching hex digits
-            var regExpTest: RegExp = /[a-fA-F0-9]{2}/;
-            var validator = false;
-            //test to see if the user input match RegExp 
-            //also check if the input field is empty
-            if (userInput == "") {
-                _StdOut.putText("User Program Input field is empty.")
-            } else if (userInput.match(regExpTest)){
-                //validator is true when valid hex digits are detected
-                validator = true;
-            } else {
-                //if the user input field contain non-hex digits
-                _StdOut.putText("Invalid! non-hex digits detected.");
-            }
-            //if hex digits are detected
-            if (validator == true) {
-                var OpCodes = userInput.split(" ");
-                //if memory is above limit
-                if (OpCodes.length == 769){
-                    _StdOut.putText("Memory is not big enough.");
-                } else {
-                    //val from memory
-                    var memory = _MemoryManager.checkPartition(OpCodes);
-                    //if memory have not reach its limit
-                    if (memory < 768){
-                        //call kernel to create new program
-                        var pid = _Kernel.newProg(memory);
-                        _StdOut.putText("Successfully Loaded Process id: " + pid);                 
-                    } else {
-                        _StdOut.putText("Not enough memory.");   
-                    }
+            //max/defualt priority is set to 10
+            var p: any = 10;
+            //test RegExp
+            if(/^\d*$/.test(args[0]) || args[0] == null) {
+                if(args[0] != null) {
+                    p = args[0];
                 }
-            } 
+                var prog = <HTMLInputElement> document.getElementById('taProgramInput');
+                var userInput = prog.value;             
+                //test to see if user input matach RegExp
+                if (/^[a-f\d\s]+$/i.test(userInput)) {
+                    var opCodes = userInput.split(" ");
+                    //check partition through mem manager
+                    var memAdd = _MemoryManager.checkPartition(opCodes);
+                    //if memory is full
+                    if (memAdd == 769) {
+                        //call kernel to load into disk
+                        var disk = _Kernel.disk(opCodes);
+                        if (disk) {
+                            //load new program
+                            var pid = _Kernel.newProg(memAdd, p ,disk);
+                        } 
+                    } else {
+                        //call kernel to load new program
+                        var pid = _Kernel.newProg(memAdd, p ,null);
+                    }
+                    _StdOut.putText("Successfully Loaded Process id: " + pid);
+                    //check if theres field is empty
+                } else if(userInput == "") {
+                    _StdOut.putText("User Program Input field is empty.");
+                    //invalid hex
+                } else {
+                    _StdOut.putText("Invalid! non-hex digits detected.");
+                }
+            }
         }
         //run selected program
         public shellRun(pid) {
@@ -474,7 +521,7 @@ module TSOS {
             //empty the pid array for running pids
             _PIDRunning = [];
         }
-        //set quantum for RR
+        //set quantum 
         public shellQuantum(args) {
             //check for an input and if the input is a positive integer using regular expression to test
             if (args != "" && /^\d*$/.test(args)){
@@ -484,6 +531,106 @@ module TSOS {
             } else {
                 _StdOut.putText("Must input a quantum value.");
             }  
+        }
+        //ls
+        public shellLs(args) {
+            //call the fsDD
+            var names = _FileSystemDeviceDriver.lS();
+            for(var name in names) {
+                //spacing between file names
+                _StdOut.putText(names[name] + " ");
+            }
+        }
+        //create
+        public shellCreate(args) {
+            var name;
+            //test RegExp
+            if(/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.create(name);
+                //print
+                _StdOut.putText(output);
+            } else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
+        }
+        //read
+        public shellRead(args) {
+            var name;
+            //test RegExp
+            if(/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.read(name);
+                //print
+                _StdOut.putText(output);
+            } else {
+                _StdOut.putText("Must input only numbers and letters");
+            }
+        }
+        //write
+        public shellWrite(args) {
+            var name;
+            var data;
+            //test RegExp
+            if(/^[a-z\d]+$/i.test(args[0])) {
+                name = args[0];
+                //check if file name is input
+                if(args.length < 2) {
+                    _StdOut.putText("Must enter data to write");
+                } else {
+                    data = args[1];                
+                    for (var i=2; i < args.length; i++){
+                        data = data + " " + args[i];
+                        }
+                        //check if the data is inputed betwen double quote
+                        if(data.charAt(0) != '"' || data.charAt(data.length-1) != '"') {
+                            _StdOut.putText("data must be in between double quote");
+                        } else {
+                            data = data.slice(1, data.length-1);
+                            //call the fsDD
+                            var output = _FileSystemDeviceDriver.write(name, data);
+                            //print
+                            _StdOut.putText(output);
+                        }
+                }
+            } else {
+                _StdOut.putText("Must input only numbers and letters");
+            }            
+        }
+        //delete
+        public shellDelete(args) {
+            var name;
+            //test RegExp
+            if(/^[a-z]+$/i.test(args)) {
+                name = args;
+                //call the fsDD
+                var output = _FileSystemDeviceDriver.delete(name);
+                //print
+                _StdOut.putText(output);
+            } else {
+                _StdOut.putText("Must input only numbers and letters");
+            }           
+        }
+        //format
+        public shellFormat(args) {
+            //check if CPU is executing
+            if(_CPU.isExecuting == false) {
+                //call the fsDD
+                _FileSystemDeviceDriver.format();
+            } else {
+                _StdOut.putText("Cannot format, CPU is executing");
+            }
+        }
+        //getschedule
+        public shellGetschedule(args) {
+            _StdOut.putText("Scheduling: " + _CpuScheduler.schedule);
+        }
+        //setschedule
+        public shellSetschedule(args) {
+            //cpuScheduler
+            _StdOut.putText(_CpuScheduler.setSchedule(args));
         }
         public shellMan(args: string[]) {
             if (args.length > 0) {
@@ -554,6 +701,30 @@ module TSOS {
                         break;
                     case "quantum":
                         _StdOut.putText("Let the user set the Round Robin quantum (measured in cpu cycles)");
+                        break;
+                    case "format":
+                        _StdOut.putText("Initialize all blocks in all sectors in all tracks");
+                        break;
+                    case "ls":
+                        _StdOut.putText("List the Giles currently stored on the disk");
+                        break;
+                    case "create":
+                        _StdOut.putText("Create the GIle filename");
+                        break;
+                    case "read":
+                        _StdOut.putText("Read and display the contents of filename");
+                        break;
+                    case "write":
+                        _StdOut.putText("Write the data inside the quotes to filename");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Remove filename form storage");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("Currently selected CPU scheduling algorithm");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Select a CPU scheduling algorithm");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
