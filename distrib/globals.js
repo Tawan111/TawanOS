@@ -25,7 +25,8 @@ const KILL_IRQ = 6; //kill a program
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
-var commands = ["help", "ver", "shutdown", "cls", "man", "trace", "rot13", "prompt", "date", "whereami", "theme", "stoptheme", "status", "bsod", "load"]; //all shell commands 
+var commands = ["help", "ver", "shutdown", "cls", "man", "trace", "rot13", "prompt", "date", "whereami", "theme", "stoptheme", "status", "bsod", "load",
+    "run", "runall", "clearmem", "ps", "kill", "killall", "quantum", "format", "ls", "create", "read", "write", "delete", "getschedule", "setschedule"]; //all shell commands 
 var theme = new Audio('https://ia600901.us.archive.org/27/items/tvtunes_7626/The%20Matrix.mp3'); //link to the Matrix theme mp3 website
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _PCB;
