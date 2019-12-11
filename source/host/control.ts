@@ -201,8 +201,7 @@ module TSOS {
         } 
         //updates the pcb table
         public static updatePcbTable(pid, state, location): void {
-            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();
-            var pcbTable = <HTMLTableSectionElement> document.getElementById("pcbTable");                
+            var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();              
             var pcbRow = <HTMLTableRowElement> document.getElementById(pid);
             if (pCounter.length == 1) {
                 pCounter = "0" + pCounter;

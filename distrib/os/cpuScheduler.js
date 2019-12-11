@@ -13,6 +13,10 @@ var TSOS;
         }
         run() {
             //running the first program
+            //check priority sorting
+            if (this.schedule == "Priority" && _RunningProcess.getSize() > 1) {
+                this.priorityComparison();
+            }
             //cycle is set to 0
             this.programCycle = 0;
             this.program = _RunningProcess.dequeue();
@@ -28,7 +32,9 @@ var TSOS;
                 if (_Swapper.swapper(this.program.tsb, disk.pcb, disk.max)) {
                     this.program.pcb = disk.pcb;
                     this.program.max = disk.max;
+                    //swapper
                     disk.tsb = _Swapper.swapper(this.program.tsb, disk.pcb, disk.max);
+                    //max memory
                     disk.pcb = 769;
                     _RunningProcess.enqueue(disk);
                 }
@@ -55,6 +61,10 @@ var TSOS;
         }
         //check the scheduler for RR
         scheduler() {
+            //check priority sorting
+            if (this.schedule == "Priority" && _RunningProcess.getSize() > 1) {
+                this.priorityComparison();
+            }
             //if theres no more program running
             if (_PIDAll.length == 0) {
                 //cpu is reset
@@ -117,6 +127,30 @@ var TSOS;
             //quantum changed to 1000
             _Quantum = 1000;
             this.schedulePrint = "Schedule is now Priority";
+        }
+        //sorting priority
+        priorityComparison() {
+            //high priority go first
+            var program = _RunningProcess.dequeue();
+            var nextProgram;
+            var sort = 0;
+            while (sort < _RunningProcess.getSize()) {
+                nextProgram = _RunningProcess.dequeue();
+                //compare program priority
+                if (nextProgram.priority < program.priority) {
+                    _RunningProcess.enqueue(program);
+                    program = nextProgram;
+                }
+                else {
+                    _RunningProcess.enqueue(nextProgram);
+                }
+                sort++;
+            }
+            //sort for higher priority
+            _RunningProcess.enqueue(program);
+            for (var i = 0; i < _RunningProcess.getSize() - 1; i++) {
+                _RunningProcess.enqueue(_RunningProcess.dequeue());
+            }
         }
     }
     TSOS.CpuScheduler = CpuScheduler;

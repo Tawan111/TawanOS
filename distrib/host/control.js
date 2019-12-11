@@ -181,7 +181,6 @@ var TSOS;
         //updates the pcb table
         static updatePcbTable(pid, state, location) {
             var pCounter = _CPU.PC.toString(16).toLocaleUpperCase();
-            var pcbTable = document.getElementById("pcbTable");
             var pcbRow = document.getElementById(pid);
             if (pCounter.length == 1) {
                 pCounter = "0" + pCounter;

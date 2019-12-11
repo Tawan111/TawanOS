@@ -8,12 +8,6 @@ var TSOS;
         constructor() {
             //access the parent and overwrite
             super();
-            this.t = 4;
-            this.s = 8;
-            this.b = 8;
-            this.bSize = 64;
-            this.directory = this.s * this.b;
-            this.data = (this.t - 1) * this.s * this.b;
             this.driverEntry = this.fsDDEntry;
         }
         fsDDEntry() {
@@ -26,14 +20,16 @@ var TSOS;
                         index.push("0");
                     }
                     //while the value is less than block size
-                    while (index.length < this.bSize) {
+                    while (index.length < 64) {
                         index.push("00");
                     }
-                    for (var i = 0; i < this.t; i++) {
-                        for (var a = 0; a < this.s; a++) {
-                            for (var b = 0; b < this.b; b++) {
-                                //tsb
-                                sessionStorage.setItem(i.toString() + a.toString() + b.toString(), JSON.stringify(index));
+                    //track
+                    for (var t = 0; t < 4; t++) {
+                        //size
+                        for (var s = 0; s < 8; s++) {
+                            //block
+                            for (var b = 0; b < 8; b++) {
+                                sessionStorage.setItem(t.toString() + s.toString() + b.toString(), JSON.stringify(index));
                             }
                         }
                     }
@@ -48,7 +44,7 @@ var TSOS;
             var names = new Array();
             var directory;
             //look for file names
-            for (var i = 1; i < this.directory; i++) {
+            for (var i = 1; i < 64; i++) {
                 data = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
                 if (data[0] == "1") {
                     directory = this.retrieveName(data);
@@ -63,7 +59,7 @@ var TSOS;
             var value = 4;
             var name = "";
             //while file exists
-            while (data[value] != "00" && value < this.bSize) {
+            while (data[value] != "00" && value < 64) {
                 //file name
                 name = name + String.fromCharCode(parseInt(data[value], 16));
                 value++;
@@ -80,7 +76,7 @@ var TSOS;
             }
             else {
                 //MBR is 000
-                for (var i = 1; i < this.directory; i++) {
+                for (var i = 1; i < 64; i++) {
                     data = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
                     if (data[0] == "0") {
                         //clear block with zeros
@@ -106,17 +102,17 @@ var TSOS;
         //search for data
         searchTSBData(name) {
             var data;
-            var dataarr = new Array();
+            var dataArr = new Array();
             var fileName;
             //searcj directory
-            for (var i = 1; i < this.directory; i++) {
-                dataarr = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
+            for (var i = 1; i < 64; i++) {
+                dataArr = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
                 //if in used
-                if (dataarr[0] == "1") {
-                    fileName = this.retrieveName(dataarr);
-                    if (this.retrieveName(dataarr) == name) {
-                        data = dataarr.splice(1, 3).toString().replace(/,/g, "");
-                        dataarr = JSON.parse(sessionStorage.getItem(data));
+                if (dataArr[0] == "1") {
+                    fileName = this.retrieveName(dataArr);
+                    if (this.retrieveName(dataArr) == name) {
+                        data = dataArr.splice(1, 3).toString().replace(/,/g, "");
+                        dataArr = JSON.parse(sessionStorage.getItem(data));
                         return data;
                     }
                     fileName = "";
@@ -140,7 +136,7 @@ var TSOS;
         //look for TSB data
         retrieveTSBValue() {
             var data = new Array();
-            for (var i = this.directory; i < sessionStorage.length; i++) {
+            for (var i = 64; i < sessionStorage.length; i++) {
                 data = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
                 //if array is empty
                 if (data[0] == "0") {
@@ -173,13 +169,13 @@ var TSOS;
                 d = JSON.parse(sessionStorage.getItem(this.searchTSBData(name)));
                 p = this.retrievePointer(d);
                 value = 4;
-                while (value < this.bSize && d[value] != "00") {
+                while (value < 64 && d[value] != "00") {
                     //add letters to the data
                     character = parseInt(d[value], 16);
                     data += String.fromCharCode(character);
                     value++;
                     //when more than one block needs to be read
-                    if (value == this.bSize && p != ":1:1:1") {
+                    if (value == 64 && p != ":1:1:1") {
                         d = JSON.parse(sessionStorage.getItem(p));
                         p = this.retrievePointer(d);
                         value = 4;
@@ -207,6 +203,7 @@ var TSOS;
                 if (this.diskWrite(this.searchTSBData(name), value)) {
                     return name + " successfully written";
                 }
+                //if file is not found
             }
             else {
                 return "File does not exist";
@@ -251,7 +248,7 @@ var TSOS;
             initial = index;
             while (data.length > 0) {
                 //when one block is not enough
-                if (index == this.bSize) {
+                if (index == 64) {
                     //retrieve new block
                     var oldDTSB = dTSB;
                     dTSB = this.retrieveTSBValue();
@@ -273,7 +270,7 @@ var TSOS;
                             //clear block
                             this.clearBlock(tsb);
                         }
-                        for (var b = initial; b < this.bSize; b++) {
+                        for (var b = initial; b < 64; b++) {
                             d = JSON.parse(sessionStorage.getItem(dTSB));
                             d[b] = "00";
                             this.diskTSB(dTSB, d);
@@ -304,7 +301,7 @@ var TSOS;
             //if content exists
             if (content != null) {
                 //directory deletion
-                for (var i = 0; i < this.directory; i++) {
+                for (var i = 0; i < 64; i++) {
                     value = JSON.parse(sessionStorage.getItem(sessionStorage.key(i)));
                     p = this.retrievePointer(value);
                     //if pointer is equal to content
@@ -323,6 +320,7 @@ var TSOS;
                     }
                 }
                 return "File Deleted";
+                //if theres no file with the input name detected
             }
             else {
                 return "File does not exist";

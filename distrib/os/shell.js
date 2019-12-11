@@ -284,6 +284,7 @@ var TSOS;
         shellLoad(args) {
             //max/defualt priority is set to 10
             var p = 10;
+            //test RegExp
             if (/^\d*$/.test(args[0]) || args[0] == null) {
                 if (args[0] != null) {
                     p = args[0];
@@ -295,10 +296,12 @@ var TSOS;
                     var opCodes = userInput.split(" ");
                     //check partition through mem manager
                     var memAdd = _MemoryManager.checkPartition(opCodes);
+                    //if memory is full
                     if (memAdd == 769) {
                         //call kernel to load into disk
                         var disk = _Kernel.disk(opCodes);
                         if (disk) {
+                            //load new program
                             var pid = _Kernel.newProg(memAdd, p, disk);
                         }
                     }
@@ -311,6 +314,7 @@ var TSOS;
                 }
                 else if (userInput == "") {
                     _StdOut.putText("User Program Input field is empty.");
+                    //invalid hex
                 }
                 else {
                     _StdOut.putText("Invalid! non-hex digits detected.");

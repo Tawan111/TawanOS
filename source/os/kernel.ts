@@ -224,7 +224,7 @@
                 _PID++;  
                 //give the program a pid value
                 var program = new Pcb(pid, _PID, priority, tsb);
-                if(tsb! = null) {
+                if(tsb != null) {
                     program.location = "HDD";
                 }
                 _NewProcess.enqueue(program);

@@ -17,6 +17,10 @@ module TSOS {
 
         public run(): void {
             //running the first program
+            //check priority sorting
+            if(this.schedule == "Priority" && _RunningProcess.getSize()>1) {
+                this.priorityComparison();
+            }
             //cycle is set to 0
             this.programCycle = 0;
             this.program = _RunningProcess.dequeue();
@@ -32,7 +36,9 @@ module TSOS {
                 if (_Swapper.swapper(this.program.tsb, disk.pcb, disk.max)) {  
                     this.program.pcb = disk.pcb;
                     this.program.max = disk.max;
+                    //swapper
                     disk.tsb = _Swapper.swapper(this.program.tsb, disk.pcb, disk.max);
+                    //max memory
                     disk.pcb = 769;
                     _RunningProcess.enqueue(disk);
                 } else {
@@ -58,6 +64,10 @@ module TSOS {
         }
         //check the scheduler for RR
         public scheduler(): void {
+            //check priority sorting
+            if(this.schedule == "Priority" && _RunningProcess.getSize()>1) {
+                this.priorityComparison();
+            }
             //if theres no more program running
             if (_PIDAll.length == 0) {
                 //cpu is reset
@@ -66,9 +76,9 @@ module TSOS {
                 //the program cycle increments after each cycle
                 this.programCycle++;
                 //checks when the program cycle exceeds the quantum
-                if (this.programCycle >= _Quantum){
+                if (this.programCycle >= _Quantum) {
                     //initialize context switch if there is another program in the queue
-                    if (!_RunningProcess.isEmpty()){
+                    if (!_RunningProcess.isEmpty()) {
                         //call context switch
                         _KernelInterruptQueue.enqueue(new Interrupt(CS_IRQ, this.program));
                     }
@@ -119,6 +129,29 @@ module TSOS {
             //quantum changed to 1000
             _Quantum = 1000;
             this.schedulePrint = "Schedule is now Priority";
+        }
+        //sorting priority
+        public priorityComparison() {
+            //high priority go first
+            var program = _RunningProcess.dequeue();
+            var nextProgram;
+            var sort = 0;
+            while(sort < _RunningProcess.getSize()) {
+                nextProgram = _RunningProcess.dequeue();
+                //compare program priority
+                if(nextProgram.priority < program.priority) {
+                    _RunningProcess.enqueue(program);
+                    program = nextProgram;
+                } else {
+                    _RunningProcess.enqueue(nextProgram);
+                }
+                sort++;
+            }
+            //sort for higher priority
+            _RunningProcess.enqueue(program);
+            for(var i=0; i < _RunningProcess.getSize()-1; i++) {
+                _RunningProcess.enqueue(_RunningProcess.dequeue());
+            }
         }
     }
 }

@@ -395,6 +395,7 @@ module TSOS {
         public shellLoad(args: string[]) {
             //max/defualt priority is set to 10
             var p: any = 10;
+            //test RegExp
             if(/^\d*$/.test(args[0]) || args[0] == null) {
                 if(args[0] != null) {
                     p = args[0];
@@ -406,10 +407,12 @@ module TSOS {
                     var opCodes = userInput.split(" ");
                     //check partition through mem manager
                     var memAdd = _MemoryManager.checkPartition(opCodes);
+                    //if memory is full
                     if (memAdd == 769) {
                         //call kernel to load into disk
                         var disk = _Kernel.disk(opCodes);
                         if (disk) {
+                            //load new program
                             var pid = _Kernel.newProg(memAdd, p ,disk);
                         } 
                     } else {
@@ -420,6 +423,7 @@ module TSOS {
                     //check if theres field is empty
                 } else if(userInput == "") {
                     _StdOut.putText("User Program Input field is empty.");
+                    //invalid hex
                 } else {
                     _StdOut.putText("Invalid! non-hex digits detected.");
                 }
@@ -584,7 +588,7 @@ module TSOS {
                         if(data.charAt(0) != '"' || data.charAt(data.length-1) != '"') {
                             _StdOut.putText("data must be in between double quote");
                         } else {
-                            data = data.slice(1,data.length-1);
+                            data = data.slice(1, data.length-1);
                             //call the fsDD
                             var output = _FileSystemDeviceDriver.write(name, data);
                             //print
