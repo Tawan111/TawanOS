@@ -1,4 +1,4 @@
-Browser-based Operating System in TypeScript
+IzuraOS
 =================================================
 
 Setup TypeScript
