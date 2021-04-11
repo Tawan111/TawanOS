@@ -1,6 +1,34 @@
 IzuraOS
 =================================================
 
+Shell Commands:
+
+* ver - Displays the current version data.
+* shutdown - Shuts down the virtual OS but leaves the underlying host/hardware simulation running.
+* cls - Clears the screen and resets the cursor position.
+* man <topic> - Displays the manual page for for <topic>.
+* trace <on | off> - Turns the OS tace on or off.
+* prompt <string> - Sets the prompt.
+* date - Displays the current date and time.
+* status <string> - Sets a status message.
+* bsod - Will crash the OS.
+* load - Validate the user code.
+* run <pid> - Runs the process according to the id.
+* clearmem - Will clear all memory.
+* runall - Will run all programs.
+* ps - Display the PID and the state of all processes.
+* kill - Kill one process.
+* killall - Kill all processes,
+* quantum - Let the user set the Round Robin quantum (measured in cpu cycles).
+* format - Initialize all blocks in all sectors in all tracks.
+* ls - List the Giles currently stored on the disk
+* create <filename> - Create the file.
+* read <filename> - Read and display the contents of filename.
+* write <filename> - Write the data inside the quotes to filename.
+* delete <filename> - Remove filename form storage.
+* getschedule - Currently selected CPU scheduling algorithm.
+* setschedule <schedule> - Select a CPU scheduling algorithm (RR, FCFS, Priority).
+
 Setup TypeScript
 ================
 
