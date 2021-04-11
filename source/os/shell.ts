@@ -166,13 +166,13 @@ module TSOS {
             // ls
             sc = new ShellCommand(this.shellLs,
                                 "ls",
-                                "- List the Giles currently stored on the disk");
+                                "- List the files currently stored on the disk");
             this.commandList[this.commandList.length] = sc;
 
             // create
             sc = new ShellCommand(this.shellCreate,
                                 "create",
-                                "<filename> - Create the Gile");
+                                "<filename> - Create the file");
             this.commandList[this.commandList.length] = sc;
 
             // read
