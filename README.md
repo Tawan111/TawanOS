@@ -1,8 +1,13 @@
 IzuraOS
 =================================================
+The base code was provided from https://github.com/AlanClasses/TSOS-2019
+
+Browser-based Operating System where each of the physical components are simulated through the browser session storage for memory.
+
+Live version: https://tawanscott.github.io/IzuraOS/
 
 Shell Commands:
-
+=================================================
 * ver - Displays the current version data.
 * shutdown - Shuts down the virtual OS but leaves the underlying host/hardware simulation running.
 * cls - Clears the screen and resets the cursor position.
