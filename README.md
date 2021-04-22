@@ -2,7 +2,7 @@ IzuraOS
 =================================================
 The base code was provided from https://github.com/AlanClasses/TSOS-2019
 
-Browser-based Operating System where each of the physical components are simulated through the browser session storage for memory.
+Browser-based Operating System where each of the physical components are simulated through the browser session storage for memory. Developed with TypeScript, HTML, and CSS.
 
 Live version: https://tawanscott.github.io/IzuraOS/
 
